@@ -10,9 +10,9 @@ from tqdm import tqdm
 num_points = 20
 mesh = UnitCubeMesh(num_points, num_points, num_points)
 
-W = FunctionSpace(mesh, 'P', 1)
-V = VectorFunctionSpace(mesh, "CG", 2)
-TS = TensorFunctionSpace(mesh, 'P', 1,symmetry=True)
+# W = FunctionSpace(mesh, 'P', 1)
+# V = VectorFunctionSpace(mesh, "CG", 2)
+# TS = TensorFunctionSpace(mesh, 'P', 1,symmetry=True)
 
 P1 = FiniteElement("Lagrange", mesh.ufl_cell(), 1)
 P2 = VectorElement("Lagrange", mesh.ufl_cell(), 2)
@@ -25,6 +25,10 @@ flowspace_element = P2 * P1
 phasespace = FunctionSpace(mesh, phasespace_element)
 polarityspace = FunctionSpace(mesh, polarityspace_element)
 flowspace = FunctionSpace(mesh, flowspace_element)
+
+W = FunctionSpace(mesh, P1)
+V = VectorFunctionSpace(mesh, P2)
+TS = TensorFunctionSpace(mesh, 'P', 1,symmetry=True)
 
 # Set fenics parameters
 parameters["form_compiler"]["quadrature_degree"] = 3
