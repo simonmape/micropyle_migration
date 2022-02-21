@@ -109,6 +109,7 @@ class NSSolver:
         v_old = self.v_old
         pr_old = self.pr_old
         p_old = self.p_old
+        phi_old = self.phi_old
         
         p_new = Function(V)
         str_new = Function(TS)
