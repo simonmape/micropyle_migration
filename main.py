@@ -28,7 +28,8 @@ flowspace = FunctionSpace(mesh, flowspace_element)
 
 # Set fenics parameters
 parameters["form_compiler"]["quadrature_degree"] = 3
-parameters["form_compiler"]["optimize" = True]
+parameters["form_compiler"]["optimize"] = True
+
 class ZeroTensor(UserExpression):
     def eval(self,value,x):
         value[0] = 0
