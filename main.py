@@ -178,6 +178,8 @@ class NSSolver:
         #Flow problem variables
         self.str_old.assign(str_new)
         self.p_old.assign(p_new)
+        print("v_old",v_old)
+        print("v_new",v_new)
         self.v_old.assign(v_new)
         self.phi_old.assign(phi_new)       
 
