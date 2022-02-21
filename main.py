@@ -127,6 +127,7 @@ class NSSolver:
         
         #STRESS TENSOR 
         #Define variational formulation
+        z = TestFunction(TS)
         Fstr = (1+eta/(E*dt))*inner(str_new,z)*dx - eta*inner(self.E(v_old),z) -\
                 (eta/E*dt)*inner(str_old,z)*dx
         #Take functional derivative
