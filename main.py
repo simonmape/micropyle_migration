@@ -29,7 +29,7 @@ flowspace = FunctionSpace(mesh, flowspace_element)
 # Set fenics parameters
 parameters["form_compiler"]["quadrature_degree"] = 3
 parameters["form_compiler"]["optimize"] = True
-parameters["preconditioner"]["structure"] = "same"
+
 class ZeroTensor(UserExpression):
     def init(self,**kwargs):
         super().init(**kwargs)
@@ -145,11 +145,13 @@ class NSSolver:
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
         
-        F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_new)*v_new,y)*dx -\
-                inner(div(str_new-eta*outer(p_new,p_new)),y)*dx +\
-                dot(nabla_grad(pr_new),y)*dx+\
-                gamma*inner(v_new,y)*dx
-    
+        # F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_new)*v_new,y)*dx -\
+        #         inner(div(str_new-eta*outer(p_new,p_new)),y)*dx +\
+        #         dot(nabla_grad(pr_new),y)*dx+\
+        #         gamma*inner(v_new,y)*dx
+        F_v = inner(nabla_grad(v_new),nabla_grad(y))*dx +\
+                gamma*inner(v_new,y)*dx + dot(nabla_grad(pr_new),y)*dx - \
+                inner(div(str_new - eta * outer(p_new, p_new)), y) * dx
         F_incomp = div(v_new)*w*dx #corresponding to incompressibility condition
         F_flow = F_v + F_incomp #total variational formulation of flow problem
         
