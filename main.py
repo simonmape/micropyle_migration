@@ -133,7 +133,7 @@ class NSSolver:
         #Take functional derivative
         J = derivative(Fstr,str_new)
         #Set boundary conditions
-        bcs = DirichletBC(TS,ZeroTensor,self.boundary)
+        bcs = DirichletBC(TS,ZeroTensor(),self.boundary)
         solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "mumps"}})
         
         # FLOW PROBLEM#
