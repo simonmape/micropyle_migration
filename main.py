@@ -154,11 +154,11 @@ class NSSolver:
         F_flow = F_v + F_incomp #total variational formulation of flow problem
         
         #Set boundary conditions#
-        zero = Expression(('0.0','0.0','0.0','0.0'), degree=2) #Expression(('0.0','0.0','0.0'), degree=2)
+        zero = Expression(('0.0','0.0','0.0','0.0'), degree=2)
         bcs = DirichletBC(flowspace, zero, self.boundary) #set zero boundary condition
         
         J = derivative(F_flow,vpr_new)
-        solve(F_flow == 0,vpr_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}}) #solve the nonlinear variational problem
+        solve(F_flow == 0,vpr_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist", "reuse_factorization":True}}) #solve the nonlinear variational problem
         v_new, pr_new = split(vpr_new)
         
         #PHASE FIELD PROBLEM#
