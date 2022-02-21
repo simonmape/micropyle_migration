@@ -115,7 +115,7 @@ class NSSolver:
         #POLARITY EVOLUTION #
         #Define variational formulation
         y = TestFunction(V)
-        Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_new)*(v_old + w_sa*p_new),y)*dx
+        Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
         #Take functional derivative
         J = derivative(Fp,p_new)
         #set boundary conditions
@@ -141,11 +141,11 @@ class NSSolver:
         dU = TrialFunction(phasespace)
         (du1, du2) = split(dU)
         
-        F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_new)*v_new)*dx -\
-                inner(div(str_new-eta*outer(p_old,p_old)),y)*dx +\
+        F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_old)*v_old)*dx -\
+                inner(div(str_new-eta*outer(p_new,p_new)),y)*dx +\
                 gamma*inner(v_new,y)*dx
     
-        F_incomp =  div(v_new)*w*dx #corresponding to incompressibility condition
+        F_incomp = div(v_new)*w*dx #corresponding to incompressibility condition
         F_flow = F_v + F_incomp #total variational formulation of flow problem
         
         #Set boundary conditions#
@@ -160,7 +160,7 @@ class NSSolver:
         phi_new = Function(W)
         w1 = TestFunction(W)
         #phi evolution       
-        F_phi = (1./dt)*(phi_new-phi_old)*w1*dx - dot(v_new,nabla_grad(phi_new))*w1*dx
+        F_phi = (1./dt)*(phi_new-phi_old)*w1*dx - dot(v_new,nabla_grad(phi_old))*w1*dx
         zero = Expression(('0.0'), degree=2)
         bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
         J= derivative(F_phi,phi_new)
