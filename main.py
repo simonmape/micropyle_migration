@@ -172,7 +172,7 @@ class NSSolver:
         zero = Expression(('0.0'), degree=2)
         bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
         J= derivative(F_phi,phi_new)
-        solve(F_phase == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
+        solve(F_phi == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         #ASSIGN ALL VARIABLES FOR NEW STEP
         #Flow problem variables
