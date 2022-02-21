@@ -147,6 +147,7 @@ class NSSolver:
         
         F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_new)*v_new,y)*dx -\
                 inner(div(str_new-eta*outer(p_new,p_new)),y)*dx +\
+                dot(nabla_grad(pr_new),y)*dx+\
                 gamma*inner(v_new,y)*dx
     
         F_incomp = div(v_new)*w*dx #corresponding to incompressibility condition
