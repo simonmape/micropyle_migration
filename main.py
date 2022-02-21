@@ -49,7 +49,7 @@ eta = 5/3
 w_sa = 0.0015*3600
 gamma = 0.04
 zeta = 0.01
-
+E=1
 #Initialize polarity and phi
 
 class phiIC(UserExpression):
