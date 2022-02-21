@@ -31,6 +31,8 @@ parameters["form_compiler"]["quadrature_degree"] = 3
 parameters["form_compiler"]["optimize"] = True
 
 class ZeroTensor(UserExpression):
+    def init(selfself,**kwargs):
+        super().init(**kwargs)
     def eval(self,value,x):
         value[0] = 0
         value[1] = 0
