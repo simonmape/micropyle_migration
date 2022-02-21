@@ -28,7 +28,7 @@ flowspace = FunctionSpace(mesh, flowspace_element)
 
 # Set fenics parameters
 parameters["form_compiler"]["quadrature_degree"] = 3
-
+parameters["form_compiler"]["optimize" = True]
 class ZeroTensor(UserExpression):
     def eval(self,value,x):
         value[0] = 0
@@ -126,7 +126,7 @@ class NSSolver:
         
         #STRESS TENSOR 
         #Define variational formulation
-        Fstr = (1+eta/(E*dt))*inner(str_new,z)*dx - eta*inner(E(v_old),z) -\
+        Fstr = (1+eta/(E*dt))*inner(str_new,z)*dx - eta*inner(self.E(v_old),z) -\
                 (eta/E*dt)*inner(str_old,z)*dx
         #Take functional derivative
         J = derivative(Fstr,str_new)
