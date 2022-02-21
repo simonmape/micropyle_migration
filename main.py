@@ -145,7 +145,7 @@ class NSSolver:
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
         
-        F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_old)*v_old,y)*dx -\
+        F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_new)*v_new,y)*dx -\
                 inner(div(str_new-eta*outer(p_new,p_new)),y)*dx +\
                 gamma*inner(v_new,y)*dx
     
