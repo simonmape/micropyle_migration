@@ -31,7 +31,7 @@ parameters["form_compiler"]["quadrature_degree"] = 3
 parameters["form_compiler"]["optimize"] = True
 
 class ZeroTensor(UserExpression):
-    def init(selfself,**kwargs):
+    def init(self,**kwargs):
         super().init(**kwargs)
     def eval(self,value,x):
         value[0] = 0
@@ -145,7 +145,7 @@ class NSSolver:
         dU = TrialFunction(phasespace)
         (du1, du2) = split(dU)
         
-        F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_old)*v_old)*dx -\
+        F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_old)*v_old,y)*dx -\
                 inner(div(str_new-eta*outer(p_new,p_new)),y)*dx +\
                 gamma*inner(v_new,y)*dx
     
