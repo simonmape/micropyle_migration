@@ -142,7 +142,7 @@ class NSSolver:
         yw = TestFunction(flowspace)
         y,w=split(yw)
         v_new, pr_new = split(vpr_new)
-        dU = TrialFunction(phasespace)
+        dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
         
         F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_old)*v_old,y)*dx -\
@@ -156,7 +156,7 @@ class NSSolver:
         zero = Expression(('0.0','0.0','0.0','0.0'), degree=2) #Expression(('0.0','0.0','0.0'), degree=2)
         bcs = DirichletBC(flowspace, zero, self.boundary) #set zero boundary condition
         
-        J = derivative(F_flow,vpr_new,dU)      
+        J = derivative(F_flow,vpr_new,dU)
         solve(F_flow == 0,vpr_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "mumps"}}) #solve the nonlinear variational problem
         v_new, pr_new = split(vpr_new)
         
