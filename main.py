@@ -117,11 +117,11 @@ class NSSolver:
         phi_new = Function(W)
 
         #Assign guesses to next iteration
-        str_new.assign(str_old)
-        p_new.assign(p_old)
-        assigner = FunctionAssigner(flowspace.sub(0),V)
-        assigner.assign(vpr_new.sub(0),v_old)
-        phi_new.assign(phi_old)
+        # str_new.assign(str_old)
+        # p_new.assign(p_old)
+        # assigner = FunctionAssigner(flowspace.sub(0),V)
+        # assigner.assign(vpr_new.sub(0),v_old)
+        # phi_new.assign(phi_old)
 
         #POLARITY EVOLUTION #
         #Define variational formulation
