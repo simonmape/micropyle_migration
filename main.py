@@ -172,10 +172,10 @@ class NSSolver:
         v_new, pr_new = split(vpr_new)
 
         assigner = FunctionAssigner(flowspace.sub(0), V)
-        assigner.assign(v_new,v_old)
+        assigner.assign(vpr_new.sub(0),v_old)
 
         assigner = FunctionAssigner(flowspace.sub(1), W)
-        assigner.assign(pr_new, pr_old)
+        assigner.assign(vpr_new.sub(1), pr_old)
 
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
