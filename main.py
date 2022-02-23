@@ -153,14 +153,30 @@ class NSSolver:
 
         #STRESS TENSOR 
         #Define variational formulation
+        u = TrialFunction(TS)
         z = TestFunction(TS)
+
         Fstr = (1+eta/(E*dt))*inner(str_new,z)*dx - eta*inner(self.E(v_old),z)*dx -\
                 (eta/E*dt)*inner(str_old,z)*dx
-        #Take functional derivative
-        J = derivative(Fstr,str_new)
-        #Set boundary conditions
-        bcs = DirichletBC(TS,ZeroTensor(),self.boundary)
-        solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
+
+        a = (1+eta/(E*dt))*inner(u,z)*dx
+        l = eta*inner(self.E(v_old),z)*dx + (eta/E*dt)*inner(str_old,z)*dx
+        A = assemble(a)
+        b = assemble(L)
+
+        solver = KrylovSolver("gmres","ilu")
+        solver.set_operator(A)
+        #p_new.assign(p_old)
+        assigner = FunctionAssigner(TS, TS)
+        assigner.assign(str_new, str_old)
+
+        solver.solve(str_new.vector(),b)
+
+        # #Take functional derivative
+        # J = derivative(Fstr,str_new)
+        # #Set boundary conditions
+        # bcs = DirichletBC(TS,ZeroTensor(),self.boundary)
+        # solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         # FLOW PROBLEM#
         yw = TestFunction(flowspace)
