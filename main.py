@@ -127,6 +127,7 @@ class NSSolver:
 
         #POLARITY EVOLUTION #
         #Define variational formulation
+        print('Entering polarity problem')
         y = TestFunction(V)
         u = TrialFunction(V)
         #Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
@@ -153,6 +154,7 @@ class NSSolver:
 
         #STRESS TENSOR 
         #Define variational formulation
+        print('Entering stress problem')
         u = TrialFunction(TS)
         z = TestFunction(TS)
 
@@ -203,13 +205,27 @@ class NSSolver:
         
         #PHASE FIELD PROBLEM#
         phi_new = Function(W)
+        u = TrialFunction(W)
         w1 = TestFunction(W)
         #phi evolution       
-        F_phi = (1./dt)*(phi_new-phi_old)*w1*dx - dot(v_new,nabla_grad(phi_old))*w1*dx
-        zero = Expression(('0.0'), degree=2)
-        bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
-        J= derivative(F_phi,phi_new)
-        solve(F_phi == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
+        #F_phi = (1./dt)*(phi_new-phi_old)*w1*dx - dot(v_new,nabla_grad(phi_old))*w1*dx
+        a = (1./dt)*u*w1*dx
+        L = (1./dt)*phi_old*w1*dx + dot(v_new,nabla_grad(phi_old))*w1*dx
+
+        A = assemble(a)
+        b = assemble(L)
+
+        solver = KrylovSolver("gmres", "ilu")
+        solver.set_operator(A)
+        assigner = FunctionAssigner(W, W)
+        assigner.assign(phi_new, phi_old)
+
+        solver.solve(phi_new.vector(), b)
+
+        # zero = Expression(('0.0'), degree=2)
+        # bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
+        # J= derivative(F_phi,phi_new)
+        # solve(F_phi == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         #ASSIGN ALL VARIABLES FOR NEW STEP
         #Flow problem variables
