@@ -135,12 +135,12 @@ class NSSolver:
         b = assemble(L)
 
         solver = KrylovSolver("gmres","ilu")
-        solver.set_operator(A)
+        #solver.set_operator(A)
         p_new.assign(p_old)
         assigner = FunctionAssigner(V, V)
         assigner.assign(p_new, p_old)
 
-        solver.solve(p_new.vector(),b)
+        solver.solve(A,p_new,b)
 
         # #Take functional derivative
         # J = derivative(Fp,p_new)
@@ -203,7 +203,7 @@ class NSSolver:
         self.phi_old.assign(phi_new)
 
 # Defining the problem
-solver = NSSolver()
+system_solver = NSSolver()
 set_log_level(20)
 numSteps=2
 
@@ -211,4 +211,4 @@ dt = 0.01
 for i in tqdm(range(numSteps)):
     t = i*dt
     # Advance one time step in the simulation
-    solver.advance_one_step(t)
+    system_solver.advance_one_step(t)
