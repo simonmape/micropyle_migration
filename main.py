@@ -141,15 +141,15 @@ class NSSolver:
         #p_new.assign(p_old)
         assigner = FunctionAssigner(V, V)
         assigner.assign(p_new, p_old)
-
-        solver.solve(p_new.vector(),b)
+        zero = Expression(('0.0','0.0','0.0'),degree=2)
+        bcs = DirichletBC(V,zero,self.boundary)
+        #Solve variational problem
+        solver.solve(p_new.vector(),b,bcs)
 
         # #Take functional derivative
         # J = derivative(Fp,p_new)
         # #set boundary conditions
-        # zero = Expression(('0.0','0.0','0.0'),degree=2)
-        # bcs = DirichletBC(V,zero,self.boundary)
-        # #Solve variational problem
+
         # solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         #STRESS TENSOR 
@@ -171,8 +171,8 @@ class NSSolver:
         #p_new.assign(p_old)
         assigner = FunctionAssigner(TS, TS)
         assigner.assign(str_new, str_old)
-
-        solver.solve(str_new.vector(),b)
+        bcs = DirichletBC(TS, ZeroTensor(), self.boundary)
+        solver.solve(str_new.vector(),b,bcs)
 
         # #Take functional derivative
         # J = derivative(Fstr,str_new)
@@ -181,6 +181,7 @@ class NSSolver:
         # solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         # FLOW PROBLEM#
+        print('Entering flow problem')
         yw = TestFunction(flowspace)
         y,w=split(yw)
         v_new, pr_new = split(vpr_new)
@@ -204,6 +205,7 @@ class NSSolver:
         v_new, pr_new = split(vpr_new)
         
         #PHASE FIELD PROBLEM#
+        print('Entered phase field problem')
         phi_new = Function(W)
         u = TrialFunction(W)
         w1 = TestFunction(W)
@@ -219,8 +221,9 @@ class NSSolver:
         solver.set_operator(A)
         assigner = FunctionAssigner(W, W)
         assigner.assign(phi_new, phi_old)
-
-        solver.solve(phi_new.vector(), b)
+        zero = Expression(('0.0'), degree=2)
+        bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
+        solver.solve(phi_new.vector(), b,bcs)
 
         # zero = Expression(('0.0'), degree=2)
         # bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
