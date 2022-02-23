@@ -96,7 +96,7 @@ class NSSolver:
 
         # Assign initial conditions for polarity fields
         self.p_old = interpolate(polarIC(),V)
-        
+
         #Assign initial condition for the phi field
         self.phi_old = interpolate(phiIC(),W)
 
@@ -119,19 +119,11 @@ class NSSolver:
         vpr_new = Function(flowspace)
         phi_new = Function(W)
 
-        #Assign guesses to next iteration
-        # str_new.assign(str_old)
-        # p_new.assign(p_old)
-        # assigner = FunctionAssigner(flowspace.sub(0),V)
-        # assigner.assign(vpr_new.sub(0),v_old)
-        # phi_new.assign(phi_old)
-
         #POLARITY EVOLUTION #
         #Define variational formulation
         print('Entering polarity problem')
         y = TestFunction(V)
         u = TrialFunction(V)
-        #Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
         a = (1./dt)*inner(u,y)*dx
         L = (1./dt)*inner(p_old,y)*dx + inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
         A = assemble(a)
@@ -151,9 +143,6 @@ class NSSolver:
         u = TrialFunction(TS)
         z = TestFunction(TS)
 
-        # Fstr = (1+eta/(E*dt))*inner(str_new,z)*dx - eta*inner(self.E(v_old),z)*dx -\
-        #         (eta/E*dt)*inner(str_old,z)*dx
-
         a = (1+eta/(E*dt))*inner(u,z)*dx
         L = eta*inner(self.E(v_old),z)*dx + (eta/E*dt)*inner(str_old,z)*dx
         A = assemble(a)
@@ -161,7 +150,6 @@ class NSSolver:
 
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(A)
-        #p_new.assign(p_old)
         assigner = FunctionAssigner(TS, TS)
         assigner.assign(str_new, str_old)
         solver.solve(str_new.vector(),b)
@@ -197,8 +185,6 @@ class NSSolver:
         phi_new = Function(W)
         u = TrialFunction(W)
         w1 = TestFunction(W)
-        #phi evolution       
-        #F_phi = (1./dt)*(phi_new-phi_old)*w1*dx - dot(v_new,nabla_grad(phi_old))*w1*dx
         a = (1./dt)*u*w1*dx
         L = (1./dt)*phi_old*w1*dx + dot(v_new,nabla_grad(phi_old))*w1*dx
 
@@ -220,6 +206,7 @@ class NSSolver:
         self.phi_old.assign(phi_new)
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
+
 # Defining the problem
 system_solver = NSSolver()
 set_log_level(20)
