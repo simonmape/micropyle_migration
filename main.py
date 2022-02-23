@@ -29,7 +29,7 @@ flowspace = FunctionSpace(mesh, flowspace_element)
 # Set fenics parameters
 parameters["form_compiler"]["quadrature_degree"] = 3
 parameters["form_compiler"]["optimize"] = True
-
+parameters["form_compiler"]["cpp_optimize"]=True
 class ZeroTensor(UserExpression):
     def init(self,**kwargs):
         super().init(**kwargs)
@@ -97,8 +97,6 @@ class NSSolver:
         #Assign initial condition for the phi field
         self.phi_old = interpolate(phiIC(),W)
 
-        self.solver = PETScKrylovSolver("cg","jacobi")
-
     def E(self, u):
         return sym(nabla_grad(u))
 
@@ -128,7 +126,7 @@ class NSSolver:
         zero = Expression(('0.0','0.0','0.0'),degree=2)
         bcs = DirichletBC(V,zero,self.boundary)
         #Solve variational problem
-        solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"krylov_solver" : "default"}})
+        solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         #STRESS TENSOR 
         #Define variational formulation
@@ -139,7 +137,7 @@ class NSSolver:
         J = derivative(Fstr,str_new)
         #Set boundary conditions
         bcs = DirichletBC(TS,ZeroTensor(),self.boundary)
-        solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"krylov_solver" : "default"}})
+        solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         # FLOW PROBLEM#
         yw = TestFunction(flowspace)
@@ -161,7 +159,7 @@ class NSSolver:
         zero = Expression(('0.0','0.0','0.0','0.0'), degree=2)
         bcs = DirichletBC(flowspace, zero, self.boundary) #set zero boundary condition
         J = derivative(F_flow,vpr_new,dU)
-        solve(F_flow == 0,vpr_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"krylov_solver" : "default"}}) #solve the nonlinear variational problem
+        solve(F_flow == 0,vpr_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}}) #solve the nonlinear variational problem
         v_new, pr_new = split(vpr_new)
         
         #PHASE FIELD PROBLEM#
@@ -172,7 +170,7 @@ class NSSolver:
         zero = Expression(('0.0'), degree=2)
         bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
         J= derivative(F_phi,phi_new)
-        solve(F_phi == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"krylov_solver" : "default"}})
+        solve(F_phi == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         #ASSIGN ALL VARIABLES FOR NEW STEP
         #Flow problem variables
