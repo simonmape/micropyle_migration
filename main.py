@@ -128,14 +128,15 @@ class NSSolver:
         #POLARITY EVOLUTION #
         #Define variational formulation
         y = TestFunction(V)
+        u = TrialFunction(V)
         #Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
-        a = (1./dt)*inner(p_new,y)*dx
+        a = (1./dt)*inner(u,y)*dx
         L = (1./dt)*inner(p_old,y)*dx + inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
         A = assemble(a)
         b = assemble(L)
 
         solver = KrylovSolver("gmres","ilu")
-        #solver.set_operator(A)
+        solver.set_operator(A)
         p_new.assign(p_old)
         assigner = FunctionAssigner(V, V)
         assigner.assign(p_new, p_old)
