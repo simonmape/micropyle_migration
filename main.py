@@ -192,7 +192,6 @@ class NSSolver:
 
         A = assemble(a)
         b = assemble(L)
-
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(A)
         solver.solve(vpr_new.vector(), b)
