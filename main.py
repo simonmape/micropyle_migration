@@ -222,7 +222,7 @@ class NSSolver:
 # Defining the problem
 system_solver = NSSolver()
 set_log_level(20)
-numSteps=2
+numSteps=1
 
 dt = 0.01
 for i in tqdm(range(numSteps)):
