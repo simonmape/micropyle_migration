@@ -30,6 +30,7 @@ flowspace = FunctionSpace(mesh, flowspace_element)
 parameters["form_compiler"]["quadrature_degree"] = 3
 parameters["form_compiler"]["optimize"] = True
 parameters["form_compiler"]["cpp_optimize"]=True
+parameters["newton_solver"]["preconditioner"] = "hypre_euclid"
 class ZeroTensor(UserExpression):
     def init(self,**kwargs):
         super().init(**kwargs)
@@ -111,7 +112,7 @@ class NSSolver:
         p_old = self.p_old
         phi_old = self.phi_old
         
-        p_new = Function(V)
+        p_new = TrialFunction(V)
         str_new = Function(TS)
         vpr_new = Function(flowspace)
         phi_new = Function(W)
@@ -126,14 +127,24 @@ class NSSolver:
         #POLARITY EVOLUTION #
         #Define variational formulation
         y = TestFunction(V)
-        Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
-        #Take functional derivative
-        J = derivative(Fp,p_new)
-        #set boundary conditions
-        zero = Expression(('0.0','0.0','0.0'),degree=2)
-        bcs = DirichletBC(V,zero,self.boundary)
-        #Solve variational problem
-        solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
+        #Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
+        a = (1./dt)*inner(p_new,y)*dx
+        L = (1./dt)*inner(p_old,y)*dx + inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
+        A = assemble(a)
+        b = assemble(L)
+
+        solver = KrylovSolver("gmres","ilu")
+        solver.set_operator(A)
+        p_new.assign(p_old)
+        solver.solve(p_new.vector(),b)
+
+        # #Take functional derivative
+        # J = derivative(Fp,p_new)
+        # #set boundary conditions
+        # zero = Expression(('0.0','0.0','0.0'),degree=2)
+        # bcs = DirichletBC(V,zero,self.boundary)
+        # #Solve variational problem
+        # solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         #STRESS TENSOR 
         #Define variational formulation
