@@ -137,6 +137,9 @@ class NSSolver:
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(A)
         p_new.assign(p_old)
+        assigner = FunctionAssigner(V, V)
+        assigner.assign(p_new, p_old)
+
         solver.solve(p_new.vector(),b)
 
         # #Take functional derivative
