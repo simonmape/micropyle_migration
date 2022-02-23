@@ -144,12 +144,6 @@ class NSSolver:
         #Solve variational problem
         solver.solve(p_new.vector(),b)
 
-        # #Take functional derivative
-        # J = derivative(Fp,p_new)
-        # #set boundary conditions
-
-        # solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
-
         #STRESS TENSOR 
         #Define variational formulation
         print('Entering stress problem')
@@ -171,29 +165,38 @@ class NSSolver:
         assigner.assign(str_new, str_old)
         solver.solve(str_new.vector(),b)
 
-        # #Take functional derivative
-        # J = derivative(Fstr,str_new)
-        # #Set boundary conditions
-        # bcs = DirichletBC(TS,ZeroTensor(),self.boundary)
-        # solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
-
         # FLOW PROBLEM#
         print('Entering flow problem')
         yw = TestFunction(flowspace)
         y,w=split(yw)
         v_new, pr_new = split(vpr_new)
+
+        assigner = FunctionAssigner(flowspace.sub(0), V)
+        assigner.assign(v_new,v_old)
+
+        assigner = FunctionAssigner(flowspace.sub(1), W)
+        assigner.assign(pr_new, pr_old)
+
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
-
-        # F_v = inner(nabla_grad(v_new),nabla_grad(y))*dx +\
-        #         gamma*inner(v_new,y)*dx + dot(nabla_grad(pr_new),y)*dx - \
-        #         inner(div(str_new - eta * outer(p_new, p_new)), y) * dx
 
         F_v = inner(div(str_new),y)*dx - inner(div(outer(p_new,p_new)),y)*dx - \
               gamma * inner(v_new, y) * dx - dot(nabla_grad(pr_new),y)*dx
         F_incomp = div(v_new)*w*dx #corresponding to incompressibility condition
         F_flow = F_v + F_incomp #total variational formulation of flow problem
-        
+
+        a = inner(nabla_grad(du1),nabla_grad(y))*dx +\
+            inner(nabla_grad(du2),y)*dx +\
+            inner(div(du1),w)
+        L = -zeta*inner(div(outer(p_new,p_new)),y)*dx - gamma*inner(v_old,y)*dx
+
+        A = assemble(a)
+        b = assemble(L)
+
+        solver = KrylovSolver("gmres", "ilu")
+        solver.set_operator(A)
+        solver.solve(vpr_new.vector(), b)
+
         #Set boundary conditions#
         zero = Expression(('0.0','0.0','0.0','0.0'), degree=2)
         bcs = DirichletBC(flowspace, zero, self.boundary) #set zero boundary condition
@@ -220,11 +223,6 @@ class NSSolver:
         assigner.assign(phi_new, phi_old)
         solver.solve(phi_new.vector(), b)
 
-        # zero = Expression(('0.0'), degree=2)
-        # bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
-        # J= derivative(F_phi,phi_new)
-        # solve(F_phi == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
-
         #ASSIGN ALL VARIABLES FOR NEW STEP
         #Flow problem variables
         self.str_old.assign(str_new)
@@ -232,7 +230,7 @@ class NSSolver:
         assigner = FunctionAssigner(V,flowspace.sub(0))
         assigner.assign(self.v_old,vpr_new.sub(0))
         self.phi_old.assign(phi_new)
-
+        self.pr_old.assign(pr_new)
 # Defining the problem
 system_solver = NSSolver()
 set_log_level(20)
