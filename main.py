@@ -119,14 +119,19 @@ class NSSolver:
         #POLARITY EVOLUTION #
         #Define variational formulation
         y = TestFunction(V)
-        Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
+        #Fp = (1./dt)*inner(p_new-p_old,y)*dx - inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
         #Take functional derivative
-        J = derivative(Fp,p_new)
+        #J = derivative(Fp,p_new)
         #set boundary conditions
         zero = Expression(('0.0','0.0','0.0'),degree=2)
         bcs = DirichletBC(V,zero,self.boundary)
         #Solve variational problem
-        solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
+        #solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
+        linearSolver = PETScKrylovSolver("cg","jacobi")
+        A = assemble((1./dt)*inner(p_new-p_old,y)*dx)
+        B = assemble(inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx)
+        bcs.apply(A,B)
+        linearSolver.solve(A,p_new.vector(),B)
 
         #STRESS TENSOR 
         #Define variational formulation
@@ -183,7 +188,7 @@ class NSSolver:
 # Defining the problem
 solver = NSSolver()
 set_log_level(20)
-numSteps=10
+numSteps=2
 
 dt = 0.01
 for i in tqdm(range(numSteps)):
