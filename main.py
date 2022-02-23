@@ -91,7 +91,8 @@ class NSSolver:
         
         # Assign initial conditions for velocity and pressure
         self.v_old = interpolate(vIC(), V)
-        self.pr_old = TestFunction(W) 
+        zero = Expression(('0.0'), degree=2)
+        self.pr_old = interpolate(zero,W)
 
         # Assign initial conditions for polarity fields
         self.p_old = interpolate(polarIC(),V)
