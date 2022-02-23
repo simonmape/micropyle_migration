@@ -141,10 +141,8 @@ class NSSolver:
         #p_new.assign(p_old)
         assigner = FunctionAssigner(V, V)
         assigner.assign(p_new, p_old)
-        zero = Expression(('0.0','0.0','0.0'),degree=2)
-        bcs = DirichletBC(V,zero,self.boundary)
         #Solve variational problem
-        solver.solve(p_new.vector(),b,bcs)
+        solver.solve(p_new.vector(),b)
 
         # #Take functional derivative
         # J = derivative(Fp,p_new)
@@ -171,8 +169,7 @@ class NSSolver:
         #p_new.assign(p_old)
         assigner = FunctionAssigner(TS, TS)
         assigner.assign(str_new, str_old)
-        bcs = DirichletBC(TS, ZeroTensor(), self.boundary)
-        solver.solve(str_new.vector(),b,bcs)
+        solver.solve(str_new.vector(),b)
 
         # #Take functional derivative
         # J = derivative(Fstr,str_new)
@@ -221,9 +218,7 @@ class NSSolver:
         solver.set_operator(A)
         assigner = FunctionAssigner(W, W)
         assigner.assign(phi_new, phi_old)
-        zero = Expression(('0.0'), degree=2)
-        bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
-        solver.solve(phi_new.vector(), b,bcs)
+        solver.solve(phi_new.vector(), b)
 
         # zero = Expression(('0.0'), degree=2)
         # bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
