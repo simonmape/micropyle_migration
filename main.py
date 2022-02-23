@@ -127,7 +127,7 @@ class NSSolver:
         bcs = DirichletBC(V,zero,self.boundary)
         #Solve variational problem
         #solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
-        linearSolver = PETScKrylovSolver("cg","jacobi")
+        linearSolver = PETScKrylovSolver("gmres","jacobi")
         A = assemble((1./dt)*inner(p_new-p_old,y)*dx)
         B = assemble(inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx)
         bcs.apply(A,B)
