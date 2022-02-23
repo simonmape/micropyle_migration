@@ -133,7 +133,7 @@ class NSSolver:
         zero = Expression(('0.0','0.0','0.0'),degree=2)
         bcs = DirichletBC(V,zero,self.boundary)
         #Solve variational problem
-        solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "gmres"}})
+        solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
 
         #STRESS TENSOR 
         #Define variational formulation
