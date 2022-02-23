@@ -31,6 +31,8 @@ parameters["form_compiler"]["quadrature_degree"] = 3
 parameters["form_compiler"]["optimize"] = True
 parameters["form_compiler"]["cpp_optimize"]=True
 parameters["newton_solver"]["preconditioner"] = "hypre_euclid"
+parameters["krylov_solver"]["nonzero_initial_guess"] = True
+
 class ZeroTensor(UserExpression):
     def init(self,**kwargs):
         super().init(**kwargs)
