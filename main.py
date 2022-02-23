@@ -181,14 +181,9 @@ class NSSolver:
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
 
-        F_v = inner(div(str_new),y)*dx - inner(div(outer(p_new,p_new)),y)*dx - \
-              gamma * inner(v_new, y) * dx - dot(nabla_grad(pr_new),y)*dx
-        F_incomp = div(v_new)*w*dx #corresponding to incompressibility condition
-        F_flow = F_v + F_incomp #total variational formulation of flow problem
-
         a = inner(nabla_grad(du1),nabla_grad(y))*dx +\
             inner(nabla_grad(du2),y)*dx +\
-            inner(div(du1),w)
+            inner(div(du1),w)*dx
         L = -zeta*inner(div(outer(p_new,p_new)),y)*dx - gamma*inner(v_old,y)*dx
 
         A = assemble(a)
@@ -196,13 +191,6 @@ class NSSolver:
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(A)
         solver.solve(vpr_new.vector(), b)
-
-        #Set boundary conditions#
-        # zero = Expression(('0.0','0.0','0.0','0.0'), degree=2)
-        # bcs = DirichletBC(flowspace, zero, self.boundary) #set zero boundary condition
-        # J = derivative(F_flow,vpr_new,dU)
-        # solve(F_flow == 0,vpr_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}}) #solve the nonlinear variational problem
-        # v_new, pr_new = split(vpr_new)
         
         #PHASE FIELD PROBLEM#
         print('Entered phase field problem')
