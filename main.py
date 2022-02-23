@@ -156,11 +156,11 @@ class NSSolver:
         u = TrialFunction(TS)
         z = TestFunction(TS)
 
-        Fstr = (1+eta/(E*dt))*inner(str_new,z)*dx - eta*inner(self.E(v_old),z)*dx -\
-                (eta/E*dt)*inner(str_old,z)*dx
+        # Fstr = (1+eta/(E*dt))*inner(str_new,z)*dx - eta*inner(self.E(v_old),z)*dx -\
+        #         (eta/E*dt)*inner(str_old,z)*dx
 
         a = (1+eta/(E*dt))*inner(u,z)*dx
-        l = eta*inner(self.E(v_old),z)*dx + (eta/E*dt)*inner(str_old,z)*dx
+        L = eta*inner(self.E(v_old),z)*dx + (eta/E*dt)*inner(str_old,z)*dx
         A = assemble(a)
         b = assemble(L)
 
