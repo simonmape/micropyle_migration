@@ -128,8 +128,8 @@ class NSSolver:
         zero = Expression(('0.0','0.0','0.0'),degree=2)
         bcs = DirichletBC(V,zero,self.boundary)
         #Solve variational problem
-        #solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
-        self.solver.solve(Fp==0,p_new,J=J,bcs=bcs)
+        solve(Fp==0,p_new,J=J,bcs=bcs,solver_parameters={"newton_solver":{"krylov_solver" : "default"}})
+
         #STRESS TENSOR 
         #Define variational formulation
         z = TestFunction(TS)
@@ -139,8 +139,8 @@ class NSSolver:
         J = derivative(Fstr,str_new)
         #Set boundary conditions
         bcs = DirichletBC(TS,ZeroTensor(),self.boundary)
-        #solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
-        self.solver.solve(Fstr==0,str_new,bcs=bcs,J=J)
+        solve(Fstr==0,str_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"krylov_solver" : "default"}})
+
         # FLOW PROBLEM#
         yw = TestFunction(flowspace)
         y,w=split(yw)
@@ -161,8 +161,7 @@ class NSSolver:
         zero = Expression(('0.0','0.0','0.0','0.0'), degree=2)
         bcs = DirichletBC(flowspace, zero, self.boundary) #set zero boundary condition
         J = derivative(F_flow,vpr_new,dU)
-        #solve(F_flow == 0,vpr_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}}) #solve the nonlinear variational problem
-        self.solver.solve(F_flow == 0,vpr_new,bcs=bcs,J=J)
+        solve(F_flow == 0,vpr_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"krylov_solver" : "default"}}) #solve the nonlinear variational problem
         v_new, pr_new = split(vpr_new)
         
         #PHASE FIELD PROBLEM#
@@ -173,8 +172,8 @@ class NSSolver:
         zero = Expression(('0.0'), degree=2)
         bcs = DirichletBC(W, zero, self.boundary) #set zero boundary condition
         J= derivative(F_phi,phi_new)
-        #solve(F_phi == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"linear_solver" : "superlu_dist"}})
-        self.solver.solve(F_phi == 0, phi_new,bcs=bcs,J=J)
+        solve(F_phi == 0, phi_new,bcs=bcs,J=J,solver_parameters={"newton_solver":{"krylov_solver" : "default"}})
+
         #ASSIGN ALL VARIABLES FOR NEW STEP
         #Flow problem variables
         self.str_old.assign(str_new)
