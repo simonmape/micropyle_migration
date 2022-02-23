@@ -145,14 +145,13 @@ class NSSolver:
         v_new, pr_new = split(vpr_new)
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
-        
-        # F_v = (1./dt)*inner(v_new - v_old,y)*dx + inner(nabla_grad(v_new)*v_new,y)*dx -\
-        #         inner(div(str_new-eta*outer(p_new,p_new)),y)*dx +\
-        #         dot(nabla_grad(pr_new),y)*dx+\
-        #         gamma*inner(v_new,y)*dx
-        F_v = inner(nabla_grad(v_new),nabla_grad(y))*dx +\
-                gamma*inner(v_new,y)*dx + dot(nabla_grad(pr_new),y)*dx - \
-                inner(div(str_new - eta * outer(p_new, p_new)), y) * dx
+
+        # F_v = inner(nabla_grad(v_new),nabla_grad(y))*dx +\
+        #         gamma*inner(v_new,y)*dx + dot(nabla_grad(pr_new),y)*dx - \
+        #         inner(div(str_new - eta * outer(p_new, p_new)), y) * dx
+
+        F_v = inner(div(str_new),y)*dx - inner(div(outer(p_new,p_new)),y)*dx - \
+              gamma * inner(v_new, y) * dx - dot(nabla_grad(pr_new),y)*dx
         F_incomp = div(v_new)*w*dx #corresponding to incompressibility condition
         F_flow = F_v + F_incomp #total variational formulation of flow problem
         
@@ -177,11 +176,9 @@ class NSSolver:
         #Flow problem variables
         self.str_old.assign(str_new)
         self.p_old.assign(p_new)
-
         assigner = FunctionAssigner(V,flowspace.sub(0))
         assigner.assign(self.v_old,vpr_new.sub(0))
-        #self.v_old.assign(v_new)
-        self.phi_old.assign(phi_new)       
+        self.phi_old.assign(phi_new)
 
 # Defining the problem
 solver = NSSolver()
