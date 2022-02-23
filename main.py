@@ -218,11 +218,12 @@ class NSSolver:
         assigner = FunctionAssigner(V,flowspace.sub(0))
         assigner.assign(self.v_old,vpr_new.sub(0))
         self.phi_old.assign(phi_new)
-        self.pr_old.assign(pr_new)
+        assigner = FunctionAssigner(W, flowspace.sub(1))
+        assigner.assign(self.pr_old, vpr_new.sub(1))
 # Defining the problem
 system_solver = NSSolver()
 set_log_level(20)
-numSteps=1
+numSteps=2
 
 dt = 0.01
 for i in tqdm(range(numSteps)):
