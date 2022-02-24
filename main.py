@@ -47,13 +47,6 @@ class ZeroTensor(UserExpression):
         
     def value_shape(self):
         return (3,3)
-        
-global eta
-global w_sa
-global gamma
-global zeta
-global E
-global dt
 
 eta = 5/3
 w_sa = 0.0015*3600
@@ -90,17 +83,12 @@ class NSSolver:
     def __init__(self):
         # Define the boundaries
         self.boundary = 'near(x[0],0) || near(x[1], 0) || near(x[2], 0) || near(x[0],1) || near(x[1], 1) || near(x[2], 1)'
-        self.n = FacetNormal(mesh)
         
-        # Assign initial conditions for the viscous stress
+        # Assign initial conditions
         self.str_old = interpolate(ZeroTensor(),TS)
-
-        # Assign initial conditions for velocity and pressure
         self.v_old = interpolate(vIC(), V)
         zero = Expression(('0.0'), degree=2)
         self.pr_old = interpolate(zero,W)
-
-        # Assign initial conditions for polarity fields
         self.p_old = interpolate(polarIC(),V)
         self.phi_old = interpolate(phiIC(),W)
 
@@ -161,7 +149,6 @@ class NSSolver:
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
         self.polarity_assigner.assign(p_new, p_old)
-        #Solve variational problem
         solver.solve(p_new.vector(),b)
 
         #STRESS TENSOR 
@@ -197,7 +184,6 @@ class NSSolver:
         solver.solve(phi_new.vector(), b)
 
         #ASSIGN ALL VARIABLES FOR NEW STEP
-        #Flow problem variables
         self.str_old.assign(str_new)
         self.p_old.assign(p_new)
         assigner = FunctionAssigner(V, flowspace.sub(0))
