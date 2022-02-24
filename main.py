@@ -2,7 +2,6 @@ from dolfin import *
 import math
 from fenics import *
 from scipy.integrate import odeint
-import matplotlib.pyplot as plt
 import numpy as np
 from ufl import nabla_div
 from tqdm import tqdm
@@ -81,8 +80,9 @@ class vIC(UserExpression):
         return (3,)
         
 class NSSolver:
-    def __init__(self):
+    def __init__(self,dt):
         # Define the boundaries
+        dt = self.dt
         self.boundary = 'near(x[0],0) || near(x[1], 0) || near(x[2], 0) || near(x[0],1) || near(x[1], 1) || near(x[2], 1)'
         self.n = FacetNormal(mesh)
         
@@ -150,7 +150,6 @@ class NSSolver:
         phi_new = Function(W)
 
         #POLARITY EVOLUTION #
-        #Define variational formulation
         print('Entering polarity problem')
         y = TestFunction(V)
         L = (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
@@ -162,7 +161,6 @@ class NSSolver:
         solver.solve(p_new.vector(),b)
 
         #STRESS TENSOR 
-        #Define variational formulation
         print('Entering stress problem')
         z = TestFunction(TS)
         L = eta * inner(self.E(v_old), z) * dx + (eta / E * dt) * inner(str_old, z) * dx
@@ -204,12 +202,11 @@ class NSSolver:
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
 
-# Defining the problem
-system_solver = NSSolver()
+dt = 0.01
+system_solver = NSSolver(dt)
 set_log_level(20)
 numSteps=10
 
-dt = 0.01
 for i in tqdm(range(numSteps)):
     t = i*dt
     # Advance one time step in the simulation
