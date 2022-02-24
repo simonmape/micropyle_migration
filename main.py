@@ -100,6 +100,12 @@ class NSSolver:
         #Assign initial condition for the phi field
         self.phi_old = interpolate(phiIC(),W)
 
+        self.polarity_assigner = FunctionAssigner(V, V)
+        self.stress_assigner = FunctionAssigner(TS, TS)
+        self.velocity_assigner = FunctionAssigner(flowspace.sub(0), V)
+        self.pressure_assigner = FunctionAssigner(flowspace.sub(1), W)
+        self.phi_assigner = FunctionAssigner(W, W)
+
     def E(self, u):
         return sym(nabla_grad(u))
 
@@ -132,8 +138,8 @@ class NSSolver:
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(A)
         #p_new.assign(p_old)
-        assigner = FunctionAssigner(V, V)
-        assigner.assign(p_new, p_old)
+
+        self.polarit_assigner.assign(p_new, p_old)
         #Solve variational problem
         solver.solve(p_new.vector(),b)
 
@@ -150,8 +156,7 @@ class NSSolver:
 
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(A)
-        assigner = FunctionAssigner(TS, TS)
-        assigner.assign(str_new, str_old)
+        self.stress_assigner.assign(str_new, str_old)
         solver.solve(str_new.vector(),b)
 
         # FLOW PROBLEM#
@@ -159,12 +164,8 @@ class NSSolver:
         yw = TestFunction(flowspace)
         y,w=split(yw)
         v_new, pr_new = split(vpr_new)
-
-        assigner = FunctionAssigner(flowspace.sub(0), V)
-        assigner.assign(vpr_new.sub(0),v_old)
-
-        assigner = FunctionAssigner(flowspace.sub(1), W)
-        assigner.assign(vpr_new.sub(1), pr_old)
+        self.velocity_assigner.assign(vpr_new.sub(0),v_old)
+        self.pressure_assigner.assign(vpr_new.sub(1), pr_old)
 
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
@@ -193,19 +194,16 @@ class NSSolver:
 
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(A)
-        assigner = FunctionAssigner(W, W)
-        assigner.assign(phi_new, phi_old)
+        self.phi_assigner.assign(phi_new, phi_old)
         solver.solve(phi_new.vector(), b)
 
         #ASSIGN ALL VARIABLES FOR NEW STEP
         #Flow problem variables
         self.str_old.assign(str_new)
         self.p_old.assign(p_new)
-        assigner = FunctionAssigner(V,flowspace.sub(0))
-        assigner.assign(self.v_old,vpr_new.sub(0))
+        self.velocity_assigner.assign(self.v_old,vpr_new.sub(0))
         self.phi_old.assign(phi_new)
-        assigner = FunctionAssigner(W, flowspace.sub(1))
-        assigner.assign(self.pr_old, vpr_new.sub(1))
+        self.polarity_assigner.assign(self.pr_old, vpr_new.sub(1))
 
 # Defining the problem
 system_solver = NSSolver()
