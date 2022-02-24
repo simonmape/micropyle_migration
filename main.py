@@ -48,12 +48,19 @@ class ZeroTensor(UserExpression):
     def value_shape(self):
         return (3,3)
         
-global eta = 5/3
-global w_sa = 0.0015*3600
-global gamma = 0.04
-global zeta = 0.01
-global E=1
-global dt = 0.01
+global eta
+global w_sa
+global gamma
+global zeta
+global E
+global dt
+
+eta = 5/3
+w_sa = 0.0015*3600
+gamma = 0.04
+zeta = 0.01
+E=1
+dt = 0.01
 
 class phiIC(UserExpression):
     def eval(self,value,x):
