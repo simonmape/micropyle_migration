@@ -200,7 +200,7 @@ class NSSolver:
         assigner.assign(self.pr_old, vpr_new.sub(1))
 
 
-system_solver = NSSolver(dt)
+system_solver = NSSolver()
 set_log_level(20)
 numSteps=10
 
