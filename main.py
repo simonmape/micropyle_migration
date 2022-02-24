@@ -129,20 +129,18 @@ class NSSolver:
         return skew(nabla_grad(u))
 
     def advance_one_step(self, t):
-        # Load objects from previous time step
+        # Load objects from previous time step and create new
         str_old = self.str_old
         v_old = self.v_old
         pr_old = self.pr_old
         p_old = self.p_old
         phi_old = self.phi_old
-        
         p_new = Function(V)
         str_new = Function(TS)
         vpr_new = Function(flowspace)
         phi_new = Function(W)
 
         #POLARITY EVOLUTION #
-        print('Entering polarity problem')
         y = TestFunction(V)
         L = (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
         b = assemble(L)
@@ -152,7 +150,6 @@ class NSSolver:
         solver.solve(p_new.vector(),b)
 
         #STRESS TENSOR 
-        print('Entering stress problem')
         z = TestFunction(TS)
         L = eta * inner(self.E(v_old), z) * dx + (eta / E * dt) * inner(str_old, z) * dx
         b = assemble(L)
@@ -162,7 +159,6 @@ class NSSolver:
         solver.solve(str_new.vector(),b)
 
         # FLOW PROBLEM#
-        print('Entering flow problem')
         yw = TestFunction(flowspace)
         y,w=split(yw)
         v_new, pr_new = split(vpr_new)
@@ -175,7 +171,6 @@ class NSSolver:
         solver.solve(vpr_new.vector(), b)
         
         #PHASE FIELD PROBLEM#
-        print('Entered phase field problem')
         L = (1. / dt) * phi_old * self.w1 * dx + dot(v_new, nabla_grad(phi_old)) * self.w1 * dx
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
@@ -191,7 +186,6 @@ class NSSolver:
         self.phi_old.assign(phi_new)
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
-
 
 system_solver = NSSolver()
 set_log_level(20)
