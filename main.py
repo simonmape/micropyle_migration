@@ -106,6 +106,30 @@ class NSSolver:
         self.pressure_assigner = FunctionAssigner(flowspace.sub(1), W)
         self.phi_assigner = FunctionAssigner(W, W)
 
+        #Define variational forms
+        y = TestFunction(V)
+        u = TrialFunction(V)
+        a = (1./dt)*inner(u,y)*dx
+        self.A_pol = assemble(a)
+
+        u = TrialFunction(TS)
+        z = TestFunction(TS)
+        a = (1+eta/(E*dt))*inner(u,z)*dx
+        self.A_str = assemble(a)
+
+        yw = TestFunction(flowspace)
+        y,w=split(yw)
+        dU = TrialFunction(flowspace)
+        (du1, du2) = split(dU)
+        a = inner(nabla_grad(du1),nabla_grad(y))*dx +\
+            inner(nabla_grad(du2),y)*dx +\
+            inner(div(du1),w)*dx
+        self.A_flow = assemble(a)
+
+        u = TrialFunction(W)
+        self.w1 = TestFunction(W)
+        a = (1./dt)*u*self.w1*dx
+        self.A_phi = assemble(a)
     def E(self, u):
         return sym(nabla_grad(u))
 
@@ -129,16 +153,10 @@ class NSSolver:
         #Define variational formulation
         print('Entering polarity problem')
         y = TestFunction(V)
-        u = TrialFunction(V)
-        a = (1./dt)*inner(u,y)*dx
-        L = (1./dt)*inner(p_old,y)*dx + inner(nabla_grad(p_old)*(v_old + w_sa*p_old),y)*dx
-        A = assemble(a)
+        L = (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
         b = assemble(L)
-
         solver = KrylovSolver("gmres","ilu")
-        solver.set_operator(A)
-        #p_new.assign(p_old)
-
+        solver.set_operator(self.A_pol)
         self.polarity_assigner.assign(p_new, p_old)
         #Solve variational problem
         solver.solve(p_new.vector(),b)
@@ -146,16 +164,11 @@ class NSSolver:
         #STRESS TENSOR 
         #Define variational formulation
         print('Entering stress problem')
-        u = TrialFunction(TS)
         z = TestFunction(TS)
-
-        a = (1+eta/(E*dt))*inner(u,z)*dx
-        L = eta*inner(self.E(v_old),z)*dx + (eta/E*dt)*inner(str_old,z)*dx
-        A = assemble(a)
+        L = eta * inner(self.E(v_old), z) * dx + (eta / E * dt) * inner(str_old, z) * dx
         b = assemble(L)
-
         solver = KrylovSolver("gmres","ilu")
-        solver.set_operator(A)
+        solver.set_operator(self.A_str)
         self.stress_assigner.assign(str_new, str_old)
         solver.solve(str_new.vector(),b)
 
@@ -166,34 +179,18 @@ class NSSolver:
         v_new, pr_new = split(vpr_new)
         self.velocity_assigner.assign(vpr_new.sub(0),v_old)
         self.pressure_assigner.assign(vpr_new.sub(1), pr_old)
-
-        dU = TrialFunction(flowspace)
-        (du1, du2) = split(dU)
-
-        a = inner(nabla_grad(du1),nabla_grad(y))*dx +\
-            inner(nabla_grad(du2),y)*dx +\
-            inner(div(du1),w)*dx
         L = -zeta*inner(div(outer(p_new,p_new)),y)*dx - gamma*inner(v_old,y)*dx
-
-        A = assemble(a)
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
-        solver.set_operator(A)
+        solver.set_operator(self.A_flow)
         solver.solve(vpr_new.vector(), b)
         
         #PHASE FIELD PROBLEM#
         print('Entered phase field problem')
-        phi_new = Function(W)
-        u = TrialFunction(W)
-        w1 = TestFunction(W)
-        a = (1./dt)*u*w1*dx
-        L = (1./dt)*phi_old*w1*dx + dot(v_new,nabla_grad(phi_old))*w1*dx
-
-        A = assemble(a)
+        L = (1. / dt) * phi_old * self.w1 * dx + dot(v_new, nabla_grad(phi_old)) * self.w1 * dx
         b = assemble(L)
-
         solver = KrylovSolver("gmres", "ilu")
-        solver.set_operator(A)
+        solver.set_operator(self.A_phi)
         self.phi_assigner.assign(phi_new, phi_old)
         solver.solve(phi_new.vector(), b)
 
