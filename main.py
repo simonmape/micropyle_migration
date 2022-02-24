@@ -86,26 +86,22 @@ class NSSolver:
         self.boundary = 'near(x[0],0) || near(x[1], 0) || near(x[2], 0) || near(x[0],1) || near(x[1], 1) || near(x[2], 1)'
         self.n = FacetNormal(mesh)
         
-        # Assign initial conditions for the viscous stress
+        # Assign initial conditions
         self.str_old = interpolate(ZeroTensor(),TS)
-        
-        # Assign initial conditions for velocity and pressure
         self.v_old = interpolate(vIC(), V)
         zero = Expression(('0.0'), degree=2)
         self.pr_old = interpolate(zero,W)
-
-        # Assign initial conditions for polarity fields
         self.p_old = interpolate(polarIC(),V)
-
-        #Assign initial condition for the phi field
         self.phi_old = interpolate(phiIC(),W)
 
+        #Assign main attributes
         self.polarity_assigner = FunctionAssigner(V, V)
         self.stress_assigner = FunctionAssigner(TS, TS)
         self.velocity_assigner = FunctionAssigner(flowspace.sub(0), V)
         self.pressure_assigner = FunctionAssigner(flowspace.sub(1), W)
         self.phi_assigner = FunctionAssigner(W, W)
         self.solver = KrylovSolver("gmres", "ilu")
+
     def E(self, u):
         return sym(nabla_grad(u))
 
@@ -151,7 +147,7 @@ class NSSolver:
         L = eta*inner(self.E(v_old),z)*dx + (eta/E*dt)*inner(str_old,z)*dx
         A = assemble(a)
         b = assemble(L)
-
+        solver = KrylovSolver("gmres", "ilu")
         self.solver.set_operator(A)
         self.solver.solve(str_new.vector(),b)
 
