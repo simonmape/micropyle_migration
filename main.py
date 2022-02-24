@@ -80,9 +80,8 @@ class vIC(UserExpression):
         return (3,)
         
 class NSSolver:
-    def __init__(self,dt):
+    def __init__(self):
         # Define the boundaries
-        dt = self.dt
         self.boundary = 'near(x[0],0) || near(x[1], 0) || near(x[2], 0) || near(x[0],1) || near(x[1], 1) || near(x[2], 1)'
         self.n = FacetNormal(mesh)
         
@@ -96,8 +95,6 @@ class NSSolver:
 
         # Assign initial conditions for polarity fields
         self.p_old = interpolate(polarIC(),V)
-
-        #Assign initial condition for the phi field
         self.phi_old = interpolate(phiIC(),W)
 
         self.polarity_assigner = FunctionAssigner(V, V)
@@ -202,7 +199,7 @@ class NSSolver:
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
 
-dt = 0.01
+global dt = 0.01
 system_solver = NSSolver(dt)
 set_log_level(20)
 numSteps=10
