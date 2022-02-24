@@ -48,12 +48,12 @@ class ZeroTensor(UserExpression):
     def value_shape(self):
         return (3,3)
         
-eta = 5/3
-w_sa = 0.0015*3600
-gamma = 0.04
-zeta = 0.01
-E=1
-#Initialize polarity and phi
+global eta = 5/3
+global w_sa = 0.0015*3600
+global gamma = 0.04
+global zeta = 0.01
+global E=1
+global dt = 0.01
 
 class phiIC(UserExpression):
     def eval(self,value,x):
@@ -199,7 +199,7 @@ class NSSolver:
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
 
-global dt = 0.01
+
 system_solver = NSSolver(dt)
 set_log_level(20)
 numSteps=10
