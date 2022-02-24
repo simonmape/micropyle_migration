@@ -201,9 +201,11 @@ class NSSolver:
         #Flow problem variables
         self.str_old.assign(str_new)
         self.p_old.assign(p_new)
-        self.velocity_assigner.assign(self.v_old,vpr_new.sub(0))
+        assigner = FunctionAssigner(V, flowspace.sub(0))
+        assigner.assign(self.v_old,vpr_new.sub(0))
         self.phi_old.assign(phi_new)
-        self.polarity_assigner.assign(self.pr_old, vpr_new.sub(1))
+        assigner = FunctionAssigner(W, flowspace.sub(1))
+        assigner.assign(self.pr_old, vpr_new.sub(1))
 
 # Defining the problem
 system_solver = NSSolver()
