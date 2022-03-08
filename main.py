@@ -189,11 +189,11 @@ class NSSolver:
 # p_file = File("results/p.pvd")
 # v_file = File("results/v.pvd")
 
-phi_file = XDMFFile(mesh,"results/phi.xdmf")
+phi_file = XDMFFile(mesh.mpi_comm(),"results/phi.xdmf")
 phi_file.parameters["flush_output"] = True
-p_file = XDMFFile(mesh,"results/p.xdmf")
+p_file = XDMFFile(mesh.mpi_comm(),"results/p.xdmf")
 p_file.parameters["flush_output"] = True
-v_file = XDMFFile(mesh,"results/v.xdmf")
+v_file = XDMFFile(mesh.mpi_comm(),"results/v.xdmf")
 v_file.parameters["flush_output"] = True
 
 system_solver = NSSolver()
