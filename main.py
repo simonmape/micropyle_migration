@@ -185,9 +185,9 @@ class NSSolver:
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
 
-# phi_file = File("results/phi.pvd")
-# p_file = File("results/p.pvd")
-# v_file = File("results/v.pvd")
+phi_file = File("results/phi.pvd")
+p_file = File("results/p.pvd")
+v_file = File("results/v.pvd")
 
 # phi_file = XDMFFile(mesh.mpi_comm(),"results/phi.xdmf")
 # phi_file.parameters["flush_output"] = True
