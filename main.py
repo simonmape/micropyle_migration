@@ -189,12 +189,12 @@ class NSSolver:
 # p_file = File("results/p.pvd")
 # v_file = File("results/v.pvd")
 
-phi_file = XDMFFile(mesh.mpi_comm(),"results/phi.xdmf")
-phi_file.parameters["flush_output"] = True
-p_file = XDMFFile(mesh.mpi_comm(),"results/p.xdmf")
-p_file.parameters["flush_output"] = True
-v_file = XDMFFile(mesh.mpi_comm(),"results/v.xdmf")
-v_file.parameters["flush_output"] = True
+# phi_file = XDMFFile(mesh.mpi_comm(),"results/phi.xdmf")
+# phi_file.parameters["flush_output"] = True
+# p_file = XDMFFile(mesh.mpi_comm(),"results/p.xdmf")
+# p_file.parameters["flush_output"] = True
+# v_file = XDMFFile(mesh.mpi_comm(),"results/v.xdmf")
+# v_file.parameters["flush_output"] = True
 
 system_solver = NSSolver()
 set_log_level(20)
@@ -211,13 +211,13 @@ for i in tqdm(range(numSteps)):
     p.rename("p","p")
     v.rename("v","v")
 
-    # phi_file << phi
-    # p_file << p
-    # v_file << v
+    phi_file << phi
+    p_file << p
+    v_file << v
 
-    phi_file.write(phi,t)
-    p_file.write(p,t)
-    v_file.write(v,t)
+    # phi_file.write(phi,t)
+    # p_file.write(p,t)
+    # v_file.write(v,t)
 
     # Advance one time step in the simulation
     system_solver.advance_one_step(t)
