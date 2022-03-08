@@ -184,10 +184,6 @@ class NSSolver:
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
 
-# phi_file = File("results/phi.pvd","compressed")
-# p_file = File("results/p.pvd","compressed")
-# v_file = File("results/v.pvd","compressed")
-
 phi_file = File("results/phi.pvd")
 p_file = File("results/p.pvd")
 v_file = File("results/v.pvd")
@@ -202,6 +198,7 @@ for i in tqdm(range(numSteps)):
     p = system_solver.p_old
     v = system_solver.v_old
 
+    print(phi.vector().get_local().min(),phi.vector().get_local().max())
     phi.rename("phi","phi")
     p.rename("p","p")
     v.rename("v","v")
