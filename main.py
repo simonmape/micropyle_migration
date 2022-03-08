@@ -184,9 +184,13 @@ class NSSolver:
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
 
-phi_file = File("results/phi.pvd","compressed")
-p_file = File("results/p.pvd","compressed")
-v_file = File("results/v.pvd","compressed")
+# phi_file = File("results/phi.pvd","compressed")
+# p_file = File("results/p.pvd","compressed")
+# v_file = File("results/v.pvd","compressed")
+
+phi_file = File("results/phi.pvd")
+p_file = File("results/p.pvd")
+v_file = File("results/v.pvd")
 
 system_solver = NSSolver()
 set_log_level(20)
