@@ -184,11 +184,27 @@ class NSSolver:
         assigner = FunctionAssigner(W, flowspace.sub(1))
         assigner.assign(self.pr_old, vpr_new.sub(1))
 
+phi_file = File("results/phi.pvd","compressed")
+p_file = File("results/p.pvd","compressed")
+v_file = File("results/v.pvd","compressed")
+
 system_solver = NSSolver()
 set_log_level(20)
 numSteps=10
 
 for i in tqdm(range(numSteps)):
     t = i*dt
+    phi = solver.phi_old
+    p = solver.p_old
+    v = solver.v_old
+
+    phi.rename("phi","phi")
+    p.rename("p","p")
+    v.rename("v","v")
+
+    phi_file << phi
+    p_file << p
+    v_file << v
+
     # Advance one time step in the simulation
     system_solver.advance_one_step(t)
