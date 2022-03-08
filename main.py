@@ -190,13 +190,13 @@ v_file = File("results/v.pvd","compressed")
 
 system_solver = NSSolver()
 set_log_level(20)
-numSteps=10
+numSteps = 10
 
 for i in tqdm(range(numSteps)):
     t = i*dt
-    phi = solver.phi_old
-    p = solver.p_old
-    v = solver.v_old
+    phi = system_solver.phi_old
+    p = system_solver.p_old
+    v = system_solver.v_old
 
     phi.rename("phi","phi")
     p.rename("p","p")
