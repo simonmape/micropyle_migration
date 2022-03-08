@@ -154,7 +154,8 @@ class NSSolver:
         solver.set_operator(self.A_str)
         self.stress_assigner.assign(str_new, str_old)
         solver.solve(str_new.vector(),b)
-        print(str_new.vector.get_local().min(),str_new.vector.get_local().max())
+        print(str_new.vector().get_local().min(),str_new.vector().get_local().max())
+
         # FLOW PROBLEM#
         yw = TestFunction(flowspace)
         y,w=split(yw)
