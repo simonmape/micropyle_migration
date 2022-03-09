@@ -138,7 +138,7 @@ class NSSolver:
         phi_new = Function(W)
 
         #POLARITY EVOLUTION #
-        y = TestFunction(V)
+        y = self.y
         L = (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
