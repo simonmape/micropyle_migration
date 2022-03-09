@@ -133,7 +133,7 @@ solver_pol.set_operator(A_pol)
 #Define operator for stress
 a_str = (1 + eta / (E_bulk * dt)) * inner(uT, z) * dx
 A_str = assemble(a_str)
-bcs_str = DirichletBC(TS, ZeroTensor, boundary)
+bcs_str = DirichletBC(TS, ZeroTensor(), boundary)
 bcs_str.apply(A_str)
 solver_str = KrylovSolver("gmres", "ilu")
 solver_str.set_operator(A_str)
