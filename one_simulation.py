@@ -148,10 +148,10 @@ A_phi = assemble(a_phi)
 solver_phi = KrylovSolver("gmres", "ilu")
 solver_phi.set_operator(A_phi)
 
-def E(self, u):
+def E(u):
     return sym(nabla_grad(u))
 
-def W(self, u):
+def W(u):
     return skew(nabla_grad(u))
 
 phi_file = File("results/phi.pvd")
