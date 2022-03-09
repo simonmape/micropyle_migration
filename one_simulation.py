@@ -27,7 +27,7 @@ w_sa = 1
 gamma = 1
 zeta = 1
 E_bulk = 1
-dt = 0.1
+dt = 0.01
 numSteps = 10
 
 # Set fenics parameters
