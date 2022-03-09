@@ -161,9 +161,6 @@ v_file = File("results/v.pvd")
 phi_old.rename("phi", "phi")
 p_old.rename("p", "p")
 v_old.rename("v", "v")
-phi_new.rename("phi", "phi")
-p_new.rename("p", "p")
-v_new.rename("v", "v")
 
 phi_file << phi_old
 p_file << p_old
@@ -202,6 +199,6 @@ for i in tqdm(range(numSteps)):
     phi_old.assign(phi_new)
     pressure_assigner_inv.assign(pr_old, vpr_new.sub(1))
 
-    phi_file << phi_new
-    p_file << p_new
-    v_file << v_new
+    phi_file << phi_old
+    p_file << p_old
+    v_file << v_old
