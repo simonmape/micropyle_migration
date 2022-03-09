@@ -46,7 +46,7 @@ class ZeroTensor(UserExpression):
         return (3,3)
 
 eta = 5/3
-w_sa = 0
+w_sa = 1
 gamma = 1
 zeta = 1
 E=1
