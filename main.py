@@ -96,28 +96,28 @@ class NSSolver:
         self.phi_assigner = FunctionAssigner(W, W)
 
         #Define variational forms
-        y = TestFunction(V)
+        self.y = TestFunction(V)
         u = TrialFunction(V)
-        a = (1./dt)*inner(u,y)*dx
+        a = (1./dt)*inner(u,self.y)*dx
         self.A_pol = assemble(a)
 
         u = TrialFunction(TS)
-        z = TestFunction(TS)
-        a = (1+eta/(E*dt))*inner(u,z)*dx
+        self.z = TestFunction(TS)
+        a = (1+eta/(E*dt))*inner(u,self.z)*dx
         self.A_str = assemble(a)
 
         yw = TestFunction(flowspace)
-        y,w=split(yw)
+        self.y1,self.w1=split(yw)
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
-        a = eta*inner(nabla_grad(du1),nabla_grad(y))*dx +\
-            inner(nabla_grad(du2),y)*dx +\
-            inner(div(du1),w)*dx
+        a = eta*inner(nabla_grad(du1),nabla_grad(self.y1))*dx +\
+            inner(nabla_grad(du2),self.y1)*dx +\
+            inner(div(du1),self.w1)*dx
         self.A_flow = assemble(a)
 
         u = TrialFunction(W)
-        self.w1 = TestFunction(W)
-        a = (1./dt)*u*self.w1*dx
+        self.w2 = TestFunction(W)
+        a = (1./dt)*u*self.w2*dx
         self.A_phi = assemble(a)
     def E(self, u):
         return sym(nabla_grad(u))
@@ -148,7 +148,7 @@ class NSSolver:
         print(p_new.vector().get_local())
 
         #STRESS TENSOR 
-        z = TestFunction(TS)
+        z = self.z
         L = eta * inner(self.E(v_old), z) * dx + (eta / E * dt) * inner(str_old, z) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
@@ -157,8 +157,8 @@ class NSSolver:
         solver.solve(str_new.vector(),b)
 
         # FLOW PROBLEM#
-        yw = TestFunction(flowspace)
-        y,w=split(yw)
+        # yw = TestFunction(flowspace)
+        y,w=  self.y1, self.w1
         v_new, pr_new = split(vpr_new)
         #self.velocity_assigner.assign(vpr_new.sub(0),v_old)
         #self.pressure_assigner.assign(vpr_new.sub(1), pr_old)
@@ -169,7 +169,7 @@ class NSSolver:
         solver.solve(vpr_new.vector(), b)
         
         #PHASE FIELD PROBLEM#
-        L = (1. / dt) * phi_old * self.w1 * dx + dot(v_new, nabla_grad(phi_old)) * self.w1 * dx
+        L = (1. / dt) * phi_old * self.w2 * dx + dot(v_new, nabla_grad(phi_old)) * self.w2 * dx
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(self.A_phi)
