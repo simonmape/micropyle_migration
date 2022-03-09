@@ -168,7 +168,7 @@ class NSSolver:
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(self.A_flow)
         solver.solve(vpr_new.vector(), b)
-        print('velocity', v_new.vector().get_local().min(), v_new.vector().get_local().max())
+        print('velocity', vpr_new.sub(0).vector().get_local().min(), vpr_new.sub(0).vector().get_local().max())
 
         #PHASE FIELD PROBLEM#
         L = (1. / dt) * phi_old * self.w2 * dx + dot(v_new, nabla_grad(phi_old)) * self.w2 * dx
