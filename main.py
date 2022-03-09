@@ -147,7 +147,7 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
-        #self.polarity_assigner.assign(p_new, p_old)
+        print('polarity pre', p_new.vector().get_local().min(), p_new.vector().get_local().max())
         solver.solve(p_new.vector(),b)
         print('polarity', p_new.vector().get_local().min(),p_new.vector().get_local().max())
 
@@ -157,7 +157,7 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_str)
-        #self.stress_assigner.assign(str_new, str_old)
+        print('stress pre', str_new.vector().get_local().min(), str_new.vector().get_local().max())
         solver.solve(str_new.vector(),b)
         print('stress',str_new.vector().get_local().min(),str_new.vector().get_local().max())
 
@@ -165,12 +165,11 @@ class NSSolver:
         # yw = TestFunction(flowspace)
         y,w=  self.y1, self.w1
         v_new, pr_new = split(vpr_new)
-        #self.velocity_assigner.assign(vpr_new.sub(0),v_old)
-        #self.pressure_assigner.assign(vpr_new.sub(1), pr_old)
         L = -zeta*inner(div(outer(p_new,p_new)),y)*dx - gamma*inner(v_old,y)*dx
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(self.A_flow)
+        print('velocity pre', vpr_new.sub(0).vector().get_local().min(), vpr_new.sub(0).vector().get_local().max())
         solver.solve(vpr_new.vector(), b)
         print('velocity', vpr_new.sub(0).vector().get_local().min(), vpr_new.sub(0).vector().get_local().max())
 
@@ -179,7 +178,6 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(self.A_phi)
-        #self.phi_assigner.assign(phi_new, phi_old)
         solver.solve(phi_new.vector(), b)
 
         #ASSIGN ALL VARIABLES FOR NEW STEP
