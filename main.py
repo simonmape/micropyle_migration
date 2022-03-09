@@ -183,7 +183,7 @@ class NSSolver:
         #PHASE FIELD PROBLEM#
         u = TrialFunction(W)
         w1 = TestFunction(W)
-        a = (1./dt)*u*self.w2*dx
+        a = (1./dt)*u*w1*dx
         A = assemble(a)
         L = (1. / dt) * phi_old * w1 * dx + dot(v_new, nabla_grad(phi_old)) * w1 * dx
         b = assemble(L)
