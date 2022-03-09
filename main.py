@@ -98,7 +98,7 @@ class NSSolver:
         #Define variational forms
         self.y = TestFunction(V)
         u = TrialFunction(V)
-        a = (1./dt)*inner(u,self.y)*dx
+        a = (1./dt)*dot(u,self.y)*dx
         self.A_pol = assemble(a)
 
         u = TrialFunction(TS)
@@ -111,8 +111,8 @@ class NSSolver:
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
         a = eta*inner(nabla_grad(du1),nabla_grad(self.y1))*dx +\
-            inner(nabla_grad(du2),self.y1)*dx +\
-            inner(div(du1),self.w1)*dx
+            dot(nabla_grad(du2),self.y1)*dx +\
+            dot(div(du1),self.w1)*dx
         self.A_flow = assemble(a)
 
         u = TrialFunction(W)
