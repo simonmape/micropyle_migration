@@ -1,7 +1,6 @@
 from dolfin import *
 import math
 from fenics import *
-from scipy.integrate import odeint
 import numpy as np
 from ufl import nabla_div
 from tqdm import tqdm
@@ -147,7 +146,7 @@ solver_flow.set_operator(A_flow)
 a_phi = (1. / dt) * u * w2 * dx
 A_phi = assemble(a_phi)
 solver_phi = KrylovSolver("gmres", "ilu")
-solver_phi.set_operator(self.A_phi)
+solver_phi.set_operator(A_phi)
 
 def E(self, u):
     return sym(nabla_grad(u))
