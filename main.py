@@ -193,7 +193,7 @@ v_file = File("results/v.pvd")
 
 
 system_solver = NSSolver()
-set_log_level(20)
+set_log_level(13)
 numSteps = 10
 
 for i in tqdm(range(numSteps)):
