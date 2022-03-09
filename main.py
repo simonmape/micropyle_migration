@@ -98,7 +98,7 @@ class NSSolver:
         #Define variational forms
         self.y = TestFunction(V)
         u = TrialFunction(V)
-        a = (1./dt)*dot(u,self.y)*dx + dot(nabla_grad(u) * (w_sa * u), y) * dx
+        a = (1./dt)*dot(u,self.y)*dx + dot(nabla_grad(u) * (w_sa * u), self.y) * dx
         self.A_pol = assemble(a)
 
         u = TrialFunction(TS)
