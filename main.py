@@ -63,7 +63,7 @@ class phiIC(UserExpression):
     
 class polarIC(UserExpression):
     def eval(self,value,x):
-        if 0.01 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.1 and 0.1 < x[2] < 0.1:
+        if 0.01 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.1 and 0.1 < x[2] < 0.2:
             value[:] = [0.5-x[0],0.5-x[1],0]
         else:
             value[:] = [0,0,0]
