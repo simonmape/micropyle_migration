@@ -141,7 +141,7 @@ class NSSolver:
         y = TestFunction(V)
         u = TrialFunction(V)
         a = (1./dt)*inner(u,y)*dx
-        A = assemble(A)
+        A = assemble(a)
         L = (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
