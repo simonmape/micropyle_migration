@@ -98,7 +98,7 @@ class NSSolver:
         #Define variational forms
         self.y = TestFunction(V)
         u = TrialFunction(V)
-        a = (1./dt)*dot(u,self.y)*dx
+        a = (1./dt)*dot(u,self.y)*dx + dot(nabla_grad(u) * (w_sa * u), y) * dx
         self.A_pol = assemble(a)
 
         u = TrialFunction(TS)
@@ -144,11 +144,11 @@ class NSSolver:
 
         #POLARITY EVOLUTION #
         y = self.y
-        L = (1. / dt) * dot(p_old, y) * dx - dot(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
+        L = (1. / dt) * dot(p_old, y) * dx - dot(nabla_grad(p_old) * v_old, y) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
-        solver.solve(p_new.vector(),b)
+        solver.solve(p_new.vector(), b)
         print(p_new.vector().get_local().min(),p_new.vector().get_local().max())
 
         #STRESS TENSOR
@@ -157,7 +157,7 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_str)
-        solver.solve(str_new.vector(),b)
+        solver.solve(str_new.vector(), b)
 
         # FLOW PROBLEM#
         # yw = TestFunction(flowspace)
