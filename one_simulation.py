@@ -98,6 +98,8 @@ stress_assigner = FunctionAssigner(TS, TS)
 velocity_assigner = FunctionAssigner(flowspace.sub(0), V)
 pressure_assigner = FunctionAssigner(flowspace.sub(1), W)
 phi_assigner = FunctionAssigner(W, W)
+velocity_assigner_inv = FunctionAssigner(V, flowspace.sub(0))
+pressure_assigner_inv = FunctionAssigner(W, flowspace.sub(1))
 
 #Define candidate functions
 p_new = Function(V)
@@ -195,13 +197,11 @@ for i in tqdm(range(numSteps)):
     solver_phi.solve(phi_new.vector(), b)
 
     # ASSIGN ALL VARIABLES FOR NEW STEP
-    self.str_old.assign(str_new)
-    self.p_old.assign(p_new)
-    assigner = FunctionAssigner(V, flowspace.sub(0))
-    assigner.assign(self.v_old, vpr_new.sub(0))
-    self.phi_old.assign(phi_new)
-    assigner = FunctionAssigner(W, flowspace.sub(1))
-    assigner.assign(self.pr_old, vpr_new.sub(1))
+    str_old.assign(str_new)
+    p_old.assign(p_new)
+    velocity_assigner_inv.assign(v_old, vpr_new.sub(0))
+    phi_old.assign(phi_new)
+    pressure_assigner_inv.assign(pr_old, vpr_new.sub(1))
 
     phi_file << phi_new
     p_file << p_new
