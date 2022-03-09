@@ -6,7 +6,7 @@ import numpy as np
 from ufl import nabla_div
 from tqdm import tqdm
 
-num_points = 20
+num_points = 50
 mesh = UnitCubeMesh(num_points, num_points, num_points)
 W = FunctionSpace(mesh, 'P', 1)
 V = VectorFunctionSpace(mesh, "CG", 2)
@@ -54,7 +54,7 @@ dt = 0.1
 
 class phiIC(UserExpression):
     def eval(self,value,x):
-        if 0.02 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.24 and x[2] < 0.1:
+        if 0.01 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.1 and 0.1< x[2] < 0.2:
             value[:] = 1
         else:
             value[:] = 0
@@ -63,7 +63,7 @@ class phiIC(UserExpression):
     
 class polarIC(UserExpression):
     def eval(self,value,x):
-        if 0.02 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.24 and x[2] < 0.1:
+        if 0.01 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.1 and 0.1 < x[2] < 0.1:
             value[:] = [0.5-x[0],0.5-x[1],0]
         else:
             value[:] = [0,0,0]
