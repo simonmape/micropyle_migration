@@ -189,7 +189,7 @@ for i in tqdm(range(numSteps)):
         b_pol = assemble(L_pol)
     else:
         b_pol = assemble(L_pol, tensor=b_pol)
-    print('pol',abs(np.linalg.eig(A_pol.array())[0]).min())
+    # print('pol',abs(np.linalg.eig(A_pol.array())[0]).min())
     solver_pol.solve(p_new.vector(), b_pol)
 
     # STRESS TENSOR
@@ -198,7 +198,7 @@ for i in tqdm(range(numSteps)):
         b_str = assemble(L_str)
     else:
         b_str = assemble(L_str, tensor=b_str)
-    print('str', abs(np.linalg.eig(A_str.array())[0]).min())
+    # print('str', abs(np.linalg.eig(A_str.array())[0]).min())
     solver_str.solve(str_new.vector(), b_str)
 
     # FLOW PROBLEM#
@@ -207,7 +207,7 @@ for i in tqdm(range(numSteps)):
         b_flow = assemble(L_flow)
     else:
         b_flow = assemble(L_flow, tensor=b_flow)
-    print('flow', abs(np.linalg.eig(A_flow.array())[0]).min())
+    # print('flow', abs(np.linalg.eig(A_flow.array())[0]).min())
     solver_flow.solve(vpr_new.vector(), b_flow)
 
     # PHASE FIELD PROBLEM#
@@ -216,7 +216,7 @@ for i in tqdm(range(numSteps)):
         b_phi = assemble(L_phi)
     else:
         b_phi = assemble(L_phi, tensor=b_phi)
-    print('phi', abs(np.linalg.eig(A_phi.array())[0]).min())
+    # print('phi', abs(np.linalg.eig(A_phi.array())[0]).min())
     solver_phi.solve(phi_new.vector(), b_phi)
 
     # ASSIGN ALL VARIABLES FOR NEW STEP
