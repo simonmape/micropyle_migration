@@ -143,7 +143,7 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
-        self.polarity_assigner.assign(p_new, p_old)
+        #self.polarity_assigner.assign(p_new, p_old)
         solver.solve(p_new.vector(),b)
 
         #STRESS TENSOR 
@@ -152,15 +152,15 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_str)
-        self.stress_assigner.assign(str_new, str_old)
+        #self.stress_assigner.assign(str_new, str_old)
         solver.solve(str_new.vector(),b)
 
         # FLOW PROBLEM#
         yw = TestFunction(flowspace)
         y,w=split(yw)
         v_new, pr_new = split(vpr_new)
-        self.velocity_assigner.assign(vpr_new.sub(0),v_old)
-        self.pressure_assigner.assign(vpr_new.sub(1), pr_old)
+        #self.velocity_assigner.assign(vpr_new.sub(0),v_old)
+        #self.pressure_assigner.assign(vpr_new.sub(1), pr_old)
         L = -zeta*inner(div(outer(p_new,p_new)),y)*dx - gamma*inner(v_old,y)*dx
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
@@ -172,7 +172,7 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(self.A_phi)
-        self.phi_assigner.assign(phi_new, phi_old)
+        #self.phi_assigner.assign(phi_new, phi_old)
         solver.solve(phi_new.vector(), b)
 
         #ASSIGN ALL VARIABLES FOR NEW STEP
