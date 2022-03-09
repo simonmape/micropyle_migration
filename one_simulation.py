@@ -122,13 +122,13 @@ y1, w1 = split(yw)
 w2 = TestFunction(W)
 
 #Define operator for polarity
-a_pol = (1. / dt) * dot(u, y) * dx
+a_pol = (1. / dt) * dot(uV, y) * dx
 A_pol = assemble(a_pol)
 solver_pol = KrylovSolver("gmres", "ilu")
 solver_pol.set_operator(A_pol)
 
 #Define operator for stress
-a_str = (1 + eta / (E * dt)) * inner(u, z) * dx
+a_str = (1 + eta / (E * dt)) * inner(uT, z) * dx
 A_str = assemble(a_str)
 solver_str = KrylovSolver("gmres", "ilu")
 solver_str.set_operator(A_str)
@@ -143,7 +143,7 @@ solver_flow = KrylovSolver("gmres", "ilu")
 solver_flow.set_operator(A_flow)
 
 #Define operator for phase field
-a_phi = (1. / dt) * u * w2 * dx
+a_phi = (1. / dt) * uphi * w2 * dx
 A_phi = assemble(a_phi)
 solver_phi = KrylovSolver("gmres", "ilu")
 solver_phi.set_operator(A_phi)
