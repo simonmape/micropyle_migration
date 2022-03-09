@@ -136,6 +136,10 @@ class NSSolver:
         str_new = Function(TS)
         vpr_new = Function(flowspace)
         phi_new = Function(W)
+        print('Initializing t=',t)
+        print('polarity', p_old.vector().get_local().min(),p_old.vector().get_local().max())
+        print('stress', str_old.vector().get_local().min(), str_old.vector().get_local().max())
+        print('velocity', vpr_old.sub(0).vector().get_local().min(), vpr_old.sub(0).vector().get_local().max())
 
         #POLARITY EVOLUTION #
         y = self.y
@@ -193,7 +197,7 @@ v_file = File("results/v.pvd")
 
 
 system_solver = NSSolver()
-set_log_level(13)
+set_log_level(20)
 numSteps = 10
 
 for i in tqdm(range(numSteps)):
