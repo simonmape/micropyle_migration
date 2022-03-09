@@ -189,7 +189,7 @@ for i in tqdm(range(numSteps)):
         b_pol = assemble(L_pol)
     else:
         b_pol = assemble(L_pol, tensor=b_pol)
-    solver_pol.solve(p_new.vector(), b)
+    solver_pol.solve(p_new.vector(), b_pol)
 
     # STRESS TENSOR
     L_str = eta * inner(E(v_old), z) * dx + (eta / E_bulk * dt) * inner(str_old, z) * dx
@@ -197,7 +197,7 @@ for i in tqdm(range(numSteps)):
         b_str = assemble(L_str)
     else:
         b_str = assemble(L_str, tensor=b_str)
-    solver_str.solve(str_new.vector(), b)
+    solver_str.solve(str_new.vector(), b_str)
 
     # FLOW PROBLEM#
     L_flow = - zeta * dot(div(outer(p_new, p_new)), y1) * dx
@@ -205,7 +205,7 @@ for i in tqdm(range(numSteps)):
         b_flow = assemble(L_flow)
     else:
         b_flow = assemble(L_flow, tensor=b_flow)
-    solver_flow.solve(vpr_new.vector(), b)
+    solver_flow.solve(vpr_new.vector(), b_flow)
 
     # PHASE FIELD PROBLEM#
     L_phi = (1. / dt) * phi_old * w2 * dx + dot(v_new, nabla_grad(phi_old)) * w2 * dx
@@ -213,7 +213,7 @@ for i in tqdm(range(numSteps)):
         b_phi = assemble(L_phi)
     else:
         b_phi = assemble(L_phi, tensor=b_phi)
-    solver_phi.solve(phi_new.vector(), b)
+    solver_phi.solve(phi_new.vector(), b_phi)
 
     # ASSIGN ALL VARIABLES FOR NEW STEP
     str_old.assign(str_new)
