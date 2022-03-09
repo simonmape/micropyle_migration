@@ -26,7 +26,7 @@ eta = 5 / 3
 w_sa = 1
 gamma = 1
 zeta = 1
-E = 1
+E_bulk = 1
 dt = 0.1
 numSteps = 10
 
@@ -128,7 +128,7 @@ solver_pol = KrylovSolver("gmres", "ilu")
 solver_pol.set_operator(A_pol)
 
 #Define operator for stress
-a_str = (1 + eta / (E * dt)) * inner(uT, z) * dx
+a_str = (1 + eta / (E_bulk * dt)) * inner(uT, z) * dx
 A_str = assemble(a_str)
 solver_str = KrylovSolver("gmres", "ilu")
 solver_str.set_operator(A_str)
@@ -178,7 +178,7 @@ for i in tqdm(range(numSteps)):
     solver_pol.solve(p_new.vector(), b)
 
     # STRESS TENSOR
-    L = eta * inner(E(v_old), z) * dx + (eta / E * dt) * inner(str_old, z) * dx
+    L = eta * inner(E(v_old), z) * dx + (eta / E_bulk * dt) * inner(str_old, z) * dx
     b = assemble(L)
     solver_str.solve(str_new.vector(), b)
 
