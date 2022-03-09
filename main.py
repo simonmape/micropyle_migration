@@ -144,7 +144,7 @@ class NSSolver:
 
         #POLARITY EVOLUTION #
         y = self.y
-        L = (1. / dt) * dot(p_old, y) * dx + dot(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
+        L = (1. / dt) * dot(p_old, y) * dx - dot(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
