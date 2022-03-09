@@ -6,7 +6,7 @@ import numpy as np
 from ufl import nabla_div
 from tqdm import tqdm
 
-num_points = 50
+num_points = 30
 mesh = UnitCubeMesh(num_points, num_points, num_points)
 W = FunctionSpace(mesh, 'P', 1)
 V = VectorFunctionSpace(mesh, "CG", 2)
@@ -119,6 +119,7 @@ class NSSolver:
         self.w2 = TestFunction(W)
         a = (1./dt)*u*self.w2*dx
         self.A_phi = assemble(a)
+
     def E(self, u):
         return sym(nabla_grad(u))
 
