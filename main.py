@@ -46,9 +46,9 @@ class ZeroTensor(UserExpression):
         return (3,3)
 
 eta = 5/3
-w_sa = 0.0015*3600
-gamma = 0.04
-zeta = 0.01
+w_sa = 50
+gamma = 1
+zeta = 1
 E=1
 dt = 0.01
 
@@ -110,7 +110,7 @@ class NSSolver:
         y,w=split(yw)
         dU = TrialFunction(flowspace)
         (du1, du2) = split(dU)
-        a = inner(nabla_grad(du1),nabla_grad(y))*dx +\
+        a = eta*inner(nabla_grad(du1),nabla_grad(y))*dx +\
             inner(nabla_grad(du2),y)*dx +\
             inner(div(du1),w)*dx
         self.A_flow = assemble(a)
@@ -154,7 +154,6 @@ class NSSolver:
         solver.set_operator(self.A_str)
         self.stress_assigner.assign(str_new, str_old)
         solver.solve(str_new.vector(),b)
-        print(str_new.vector().get_local().min(),str_new.vector().get_local().max())
 
         # FLOW PROBLEM#
         yw = TestFunction(flowspace)
@@ -189,12 +188,6 @@ phi_file = File("results/phi.pvd")
 p_file = File("results/p.pvd")
 v_file = File("results/v.pvd")
 
-# phi_file = XDMFFile(mesh.mpi_comm(),"results/phi.xdmf")
-# phi_file.parameters["flush_output"] = True
-# p_file = XDMFFile(mesh.mpi_comm(),"results/p.xdmf")
-# p_file.parameters["flush_output"] = True
-# v_file = XDMFFile(mesh.mpi_comm(),"results/v.xdmf")
-# v_file.parameters["flush_output"] = True
 
 system_solver = NSSolver()
 set_log_level(20)
@@ -206,7 +199,6 @@ for i in tqdm(range(numSteps)):
     p = system_solver.p_old
     v = system_solver.v_old
 
-    print(phi.vector().get_local().min(),phi.vector().get_local().max())
     phi.rename("phi","phi")
     p.rename("p","p")
     v.rename("v","v")
@@ -214,10 +206,6 @@ for i in tqdm(range(numSteps)):
     phi_file << phi
     p_file << p
     v_file << v
-
-    # phi_file.write(phi,t)
-    # p_file.write(p,t)
-    # v_file.write(v,t)
 
     # Advance one time step in the simulation
     system_solver.advance_one_step(t)
