@@ -5,7 +5,7 @@ import numpy as np
 from ufl import nabla_div
 from tqdm import tqdm
 
-num_points = 30
+num_points = 35
 mesh = UnitCubeMesh(num_points, num_points, num_points)
 W = FunctionSpace(mesh, 'P', 1)
 V = VectorFunctionSpace(mesh, "CG", 2)
@@ -184,7 +184,7 @@ for i in tqdm(range(numSteps)):
     print('velocity', v_old.vector().get_local().min(), v_old.vector().get_local().max())
 
     # POLARITY EVOLUTION #
-    L_pol = (1. / dt) * dot(p_old, y) * dx + dot(p_old, y) * dx - dot(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
+    L_pol = (1. / dt) * dot(p_old, y) * dx - dot(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
     if i==0:
         b_pol = assemble(L_pol)
     else:
