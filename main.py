@@ -54,7 +54,7 @@ dt = 0.01
 
 class phiIC(UserExpression):
     def eval(self,value,x):
-        if 0.02 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.9 and x[2] < 0.1:
+        if 0.02 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.24 and x[2] < 0.1:
             value[:] = 1
         else:
             value[:] = 0
