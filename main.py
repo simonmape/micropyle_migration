@@ -64,7 +64,7 @@ class phiIC(UserExpression):
 class polarIC(UserExpression):
     def eval(self,value,x):
         if 0.01 < (x[0]-0.5)**2 + (x[1]-0.5)**2 < 0.1 and 0.1 < x[2] < 0.2:
-            value[:] = [0.5-x[0],0.5-x[1],0.1]
+            value[:] = [0.5-x[0],0.5-x[1],0]
         else:
             value[:] = [0,0,0]
     def value_shape(self):
@@ -144,7 +144,7 @@ class NSSolver:
 
         #POLARITY EVOLUTION #
         y = self.y
-        L = (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
+        L = (1. / dt) * dot(p_old, y) * dx + dot(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
@@ -162,7 +162,7 @@ class NSSolver:
         # yw = TestFunction(flowspace)
         y,w=  self.y1, self.w1
         v_new, pr_new = split(vpr_new)
-        L = -zeta*inner(div(outer(p_new,p_new)),y)*dx - gamma*inner(v_old,y)*dx
+        L = -zeta*dot(div(outer(p_new,p_new)),y)*dx - gamma*dot(v_old,y)*dx
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(self.A_flow)
