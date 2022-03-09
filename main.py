@@ -139,7 +139,7 @@ class NSSolver:
         print('Initializing t=',t)
         print('polarity', p_old.vector().get_local().min(),p_old.vector().get_local().max())
         print('stress', str_old.vector().get_local().min(), str_old.vector().get_local().max())
-        print('velocity', vpr_old.sub(0).vector().get_local().min(), vpr_old.sub(0).vector().get_local().max())
+        print('velocity', v_old.sub(0).vector().get_local().min(), v_old.sub(0).vector().get_local().max())
 
         #POLARITY EVOLUTION #
         y = self.y
