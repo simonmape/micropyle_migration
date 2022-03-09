@@ -139,7 +139,7 @@ class NSSolver:
         print('Initializing t=',t)
         print('polarity', p_old.vector().get_local().min(),p_old.vector().get_local().max())
         print('stress', str_old.vector().get_local().min(), str_old.vector().get_local().max())
-        print('velocity', v_old.sub(0).vector().get_local().min(), v_old.sub(0).vector().get_local().max())
+        print('velocity', v_old.vector().get_local().min(), v_old.vector().get_local().max())
 
         #POLARITY EVOLUTION #
         y = self.y
@@ -147,9 +147,7 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
-        print('polarity pre', p_new.vector().get_local().min(), p_new.vector().get_local().max())
         solver.solve(p_new.vector(),b)
-        print('polarity', p_new.vector().get_local().min(),p_new.vector().get_local().max())
 
         #STRESS TENSOR
         z = self.z
@@ -157,9 +155,7 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_str)
-        print('stress pre', str_new.vector().get_local().min(), str_new.vector().get_local().max())
         solver.solve(str_new.vector(),b)
-        print('stress',str_new.vector().get_local().min(),str_new.vector().get_local().max())
 
         # FLOW PROBLEM#
         # yw = TestFunction(flowspace)
@@ -169,9 +165,7 @@ class NSSolver:
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(self.A_flow)
-        print('velocity pre', vpr_new.sub(0).vector().get_local().min(), vpr_new.sub(0).vector().get_local().max())
         solver.solve(vpr_new.vector(), b)
-        print('velocity', vpr_new.sub(0).vector().get_local().min(), vpr_new.sub(0).vector().get_local().max())
 
         #PHASE FIELD PROBLEM#
         L = (1. / dt) * phi_old * self.w2 * dx + dot(v_new, nabla_grad(phi_old)) * self.w2 * dx
