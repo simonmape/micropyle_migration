@@ -149,7 +149,6 @@ class NSSolver:
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
         solver.solve(p_new.vector(), b)
-        print(nabla_grad(p_old) * (v_old + w_sa * p_old).vector().max())
 
         #STRESS TENSOR
         z = self.z
