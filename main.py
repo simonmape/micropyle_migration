@@ -149,6 +149,8 @@ class NSSolver:
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
         solver.solve(p_new.vector(), b)
+        print('A:',self.A_pol.array())
+        print('b:',b.array())
 
         #STRESS TENSOR
         z = self.z
