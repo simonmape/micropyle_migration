@@ -96,29 +96,29 @@ class NSSolver:
         self.phi_assigner = FunctionAssigner(W, W)
 
         #Define variational forms
-        self.y = TestFunction(V)
-        u = TrialFunction(V)
-        a = (1./dt)*inner(u,self.y)*dx
-        self.A_pol = assemble(a)
-
-        u = TrialFunction(TS)
-        self.z = TestFunction(TS)
-        a = (1+eta/(E*dt))*inner(u,self.z)*dx
-        self.A_str = assemble(a)
-
-        yw = TestFunction(flowspace)
-        self.y1,self.w1=split(yw)
-        dU = TrialFunction(flowspace)
-        (du1, du2) = split(dU)
-        a = eta*inner(nabla_grad(du1),nabla_grad(self.y1))*dx +\
-            inner(nabla_grad(du2),self.y1)*dx +\
-            inner(div(du1),self.w1)*dx
-        self.A_flow = assemble(a)
-
-        u = TrialFunction(W)
-        self.w2 = TestFunction(W)
-        a = (1./dt)*u*self.w2*dx
-        self.A_phi = assemble(a)
+        # self.y = TestFunction(V)
+        # u = TrialFunction(V)
+        # a = (1./dt)*inner(u,self.y)*dx
+        # self.A_pol = assemble(a)
+        #
+        # u = TrialFunction(TS)
+        # self.z = TestFunction(TS)
+        # a = (1+eta/(E*dt))*inner(u,self.z)*dx
+        # self.A_str = assemble(a)
+        #
+        # yw = TestFunction(flowspace)
+        # self.y1,self.w1=split(yw)
+        # dU = TrialFunction(flowspace)
+        # (du1, du2) = split(dU)
+        # a = eta*inner(nabla_grad(du1),nabla_grad(self.y1))*dx +\
+        #     inner(nabla_grad(du2),self.y1)*dx +\
+        #     inner(div(du1),self.w1)*dx
+        # self.A_flow = assemble(a)
+        #
+        # u = TrialFunction(W)
+        # self.w2 = TestFunction(W)
+        # a = (1./dt)*u*self.w2*dx
+        # self.A_phi = assemble(a)
     def E(self, u):
         return sym(nabla_grad(u))
 
@@ -138,41 +138,57 @@ class NSSolver:
         phi_new = Function(W)
 
         #POLARITY EVOLUTION #
-        y = self.y
+        y = TestFunction(V)
+        u = TrialFunction(V)
+        a = (1./dt)*inner(u,y)*dx
+        A = assemble(A)
         L = (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
-        solver.set_operator(self.A_pol)
+        solver.set_operator(A)
         #self.polarity_assigner.assign(p_new, p_old)
         solver.solve(p_new.vector(),b)
         print(p_new.vector().get_local())
 
-        #STRESS TENSOR 
-        z = self.z
+        #STRESS TENSOR
+        u = TrialFunction(TS)
+        z = TestFunction(TS)
+        a = (1+eta/(E*dt))*inner(u,z)*dx
+        A = assemble(a)
         L = eta * inner(self.E(v_old), z) * dx + (eta / E * dt) * inner(str_old, z) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
-        solver.set_operator(self.A_str)
+        solver.set_operator(A)
         #self.stress_assigner.assign(str_new, str_old)
         solver.solve(str_new.vector(),b)
 
         # FLOW PROBLEM#
-        # yw = TestFunction(flowspace)
-        y,w=  self.y1, self.w1
+        yw = TestFunction(flowspace)
+        y,w = split(yw)
+        dU = TrialFunction(flowspace)
+        (du1, du2) = split(dU)
+        a = eta * inner(nabla_grad(du1), nabla_grad(y)) * dx + \
+            inner(nabla_grad(du2), y) * dx + \
+            inner(div(du1), w) * dx
+        A = assemble(a)
         v_new, pr_new = split(vpr_new)
         #self.velocity_assigner.assign(vpr_new.sub(0),v_old)
         #self.pressure_assigner.assign(vpr_new.sub(1), pr_old)
         L = -zeta*inner(div(outer(p_new,p_new)),y)*dx - gamma*inner(v_old,y)*dx
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
-        solver.set_operator(self.A_flow)
+        solver.set_operator(A)
         solver.solve(vpr_new.vector(), b)
         
         #PHASE FIELD PROBLEM#
-        L = (1. / dt) * phi_old * self.w2 * dx + dot(v_new, nabla_grad(phi_old)) * self.w2 * dx
+        u = TrialFunction(W)
+        w1 = TestFunction(W)
+        a = (1./dt)*u*self.w2*dx
+        A = assemble(a)
+        L = (1. / dt) * phi_old * w1 * dx + dot(v_new, nabla_grad(phi_old)) * w1 * dx
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
-        solver.set_operator(self.A_phi)
+        solver.set_operator(A)
         #self.phi_assigner.assign(phi_new, phi_old)
         solver.solve(phi_new.vector(), b)
 
