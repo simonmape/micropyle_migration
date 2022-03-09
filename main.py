@@ -162,7 +162,7 @@ class NSSolver:
         # yw = TestFunction(flowspace)
         y,w=  self.y1, self.w1
         v_new, pr_new = split(vpr_new)
-        L = -zeta*dot(div(outer(p_new,p_new)),y)*dx - gamma*dot(v_old,y)*dx
+        L = - zeta*dot(div(outer(p_new,p_new)),y)*dx - gamma*dot(v_old,y)*dx
         b = assemble(L)
         solver = KrylovSolver("gmres", "ilu")
         solver.set_operator(self.A_flow)
@@ -187,7 +187,6 @@ class NSSolver:
 phi_file = File("results/phi.pvd")
 p_file = File("results/p.pvd")
 v_file = File("results/v.pvd")
-
 
 system_solver = NSSolver()
 set_log_level(20)
