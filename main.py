@@ -139,12 +139,13 @@ class NSSolver:
 
         #POLARITY EVOLUTION #
         y = TestFunction(V)
-        L = 50# (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
+        L = (1. / dt) * inner(p_old, y) * dx + inner(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
         b = assemble(L)
         solver = KrylovSolver("gmres","ilu")
         solver.set_operator(self.A_pol)
         #self.polarity_assigner.assign(p_new, p_old)
         solver.solve(p_new.vector(),b)
+        print(p_new.vector().get_local())
 
         #STRESS TENSOR 
         z = TestFunction(TS)
