@@ -50,7 +50,7 @@ w_sa = 0
 gamma = 1
 zeta = 1
 E=1
-dt = 0.001
+dt = 0.1
 
 class phiIC(UserExpression):
     def eval(self,value,x):
