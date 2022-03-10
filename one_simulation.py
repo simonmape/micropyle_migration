@@ -23,7 +23,7 @@ flowspace = FunctionSpace(mesh, flowspace_element)
 
 #Define simulation parameters
 eta = 5 / 3
-w_sa = 10
+w_sa = 5
 gamma = 1
 zeta = 1
 E_bulk = 1
@@ -162,31 +162,31 @@ v_file << v_old
 
 p_new.assign(p_old)
 phi_new.assign(phi_old)
-
+velocity_assigner.assign()
 for i in tqdm(range(numSteps)):
-    print('Initializing i=', i)
-    print('polarity', p_old.vector().get_local().min(), p_old.vector().get_local().max())
-    print('stress', str_old.vector().get_local().min(), str_old.vector().get_local().max())
-    print('velocity', v_old.vector().get_local().min(), v_old.vector().get_local().max())
-
+    print('Time i=', i)
     # POLARITY EVOLUTION #
     L_pol = (1. / dt) * dot(p_old, y) * dx - dot(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
     solve(a_pol == L_pol, p_new, bcs_pol, solver_parameters=dict(linear_solver='gmres',
                                                                  preconditioner='ilu'))
+    print('polarity', p_new.vector().get_local().min(), p_new.vector().get_local().max())
 
     # STRESS TENSOR
     L_str = eta * inner(sym(nabla_grad(v_old)), z) * dx + (eta / E_bulk * dt) * inner(str_old, z) * dx
     solve(a_str == L_str, str_new, bcs=bcs_str, solver_parameters=dict(linear_solver='gmres',
                                                                  preconditioner='ilu'))
+    print('stress', str_new.vector().get_local().min(), str_new.vector().get_local().max())
 
     # FLOW PROBLEM#
     L_flow = - zeta * dot(div(outer(p_new, p_new)), y1) * dx
     solve(a_flow == L_flow, vpr_new, bcs_flow, solver_parameters=dict(linear_solver='gmres',
                                                                  preconditioner='ilu'))
+    print('velocity', vpr_new.sub(0).vector().get_local().min(), vpr_new.sub(0).vector().get_local().max())
     # PHASE FIELD PROBLEM#
     L_phi = (1. / dt) * phi_old * w2 * dx + dot(v_new, nabla_grad(phi_old)) * w2 * dx
     solve(a_phi == L_phi, phi_new, bcs_phi, solver_parameters=dict(linear_solver='gmres',
                                                                       preconditioner='ilu'))
+    print('phi', phi_new.vector().get_local().min(), phi_new.vector().get_local().max())
 
     # ASSIGN ALL VARIABLES FOR NEW STEP
     str_old.assign(str_new)
