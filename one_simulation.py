@@ -123,41 +123,41 @@ w2 = TestFunction(W)
 
 #Define operator for polarity
 a_pol = (1. / dt) * dot(uV, y) * dx
-A_pol = assemble(a_pol)
+# A_pol = assemble(a_pol)
 zero = Expression(('0.0', '0.0', '0.0'), degree=2)  # Expression(('0.0','0.0','0.0'), degree=2)
 bcs_pol = DirichletBC(V, zero, boundary)
 # bcs_pol.apply(A_pol)
-solver_pol = KrylovSolver("superlu_dist", "ilu")
-solver_pol.set_operator(A_pol)
+# solver_pol = KrylovSolver("superlu_dist", "ilu")
+# solver_pol.set_operator(A_pol)
 
 #Define operator for stress
 a_str = (1 + eta / (E_bulk * dt)) * inner(uT, z) * dx
-A_str = assemble(a_str)
+# A_str = assemble(a_str)
 bcs_str = DirichletBC(TS, ZeroTensor(), boundary)
 # bcs_str.apply(A_str)
-solver_str = KrylovSolver("superlu_dist", "ilu")
-solver_str.set_operator(A_str)
+# solver_str = KrylovSolver("superlu_dist", "ilu")
+# solver_str.set_operator(A_str)
 
 #Define operator for flow problem
 a_flow = eta * inner(nabla_grad(du1), nabla_grad(y1)) * dx +\
     dot(nabla_grad(du2), y1) * dx +\
     dot(div(du1), w1) * dx +\
     gamma * dot(du1, y1) * dx
-A_flow = assemble(a_flow)
+# A_flow = assemble(a_flow)
 zero = Expression(('0.0', '0.0', '0.0', '0.0'), degree=2)
 bcs_flow = DirichletBC(flowspace, zero, boundary)
 # bcs_flow.apply(A_flow)
-solver_flow = KrylovSolver("superlu_dist", "ilu")
-solver_flow.set_operator(A_flow)
+# solver_flow = KrylovSolver("superlu_dist", "ilu")
+# solver_flow.set_operator(A_flow)
 
 #Define operator for phase field
 a_phi = (1. / dt) * uphi * w2 * dx
-A_phi = assemble(a_phi)
+# A_phi = assemble(a_phi)
 zero = Expression(('0.0'), degree=2)
 bcs_phi = DirichletBC(W, zero, boundary)
 # bcs_phi.apply(A_phi)
-solver_phi = KrylovSolver("superlu_dist", "ilu")
-solver_phi.set_operator(A_phi)
+# solver_phi = KrylovSolver("superlu_dist", "ilu")
+# solver_phi.set_operator(A_phi)
 
 def E(u):
     return sym(nabla_grad(u))
