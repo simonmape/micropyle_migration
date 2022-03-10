@@ -194,7 +194,7 @@ for i in tqdm(range(numSteps)):
     #solver_pol.solve(p_new.vector(), b_pol)
 
     # STRESS TENSOR
-    L_str = eta * inner(sym(nabla_grad(u)), z) * dx + (eta / E_bulk * dt) * inner(str_old, z) * dx
+    L_str = eta * inner(sym(nabla_grad(v_old)), z) * dx + (eta / E_bulk * dt) * inner(str_old, z) * dx
     # if i==0:
     #     b_str = assemble(L_str)
     # else:
