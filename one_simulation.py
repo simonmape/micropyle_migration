@@ -189,7 +189,7 @@ for i in tqdm(range(numSteps)):
     #     b_pol = assemble(L_pol)
     # else:
     #     b_pol = assemble(L_pol, tensor=b_pol)
-    solve(a_pol == L_pol, p_new, bcs_pol, solver_parameters=dict(linear_solver='superlu_dist',
+    solve(a_pol == L_pol, p_new, bcs_pol, solver_parameters=dict(linear_solver='petsc',
                                                                  preconditioner='ilu'))
     #solver_pol.solve(p_new.vector(), b_pol)
 
@@ -199,7 +199,7 @@ for i in tqdm(range(numSteps)):
     #     b_str = assemble(L_str)
     # else:
     #     b_str = assemble(L_str, tensor=b_str)
-    solve(a_str == L_str, str_new, bcs_str, solver_parameters=dict(linear_solver='superlu_dist',
+    solve(a_str == L_str, str_new, bcs_str, solver_parameters=dict(linear_solver='petsc',
                                                                  preconditioner='ilu'))
     # solver_str.solve(str_new.vector(), b_str)
 
@@ -211,7 +211,7 @@ for i in tqdm(range(numSteps)):
     #     b_flow = assemble(L_flow, tensor=b_flow)
     # print('flow', abs(np.linalg.eig(A_flow.array())[0]).min())
     # solver_flow.solve(vpr_new.vector(), b_flow)
-    solve(a_flow == L_flow, vpr_new, bcs_flow, solver_parameters=dict(linear_solver='superlu_dist',
+    solve(a_flow == L_flow, vpr_new, bcs_flow, solver_parameters=dict(linear_solver='petsc',
                                                                  preconditioner='ilu'))
     # PHASE FIELD PROBLEM#
     L_phi = (1. / dt) * phi_old * w2 * dx + dot(v_new, nabla_grad(phi_old)) * w2 * dx
@@ -219,7 +219,7 @@ for i in tqdm(range(numSteps)):
     #     b_phi = assemble(L_phi)
     # else:
     #     b_phi = assemble(L_phi, tensor=b_phi)
-    solve(a_phi == L_phi, phi_new, bcs_phi, solver_parameters=dict(linear_solver='superlu_dist',
+    solve(a_phi == L_phi, phi_new, bcs_phi, solver_parameters=dict(linear_solver='petsc',
                                                                       preconditioner='ilu'))
     # solver_phi.solve(phi_new.vector(), b_phi)
 
