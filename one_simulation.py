@@ -135,9 +135,9 @@ zero = Expression((('0.0', '0.0', '0.0'),
 bcs_str = DirichletBC(TS, zero, boundary)
 
 #Define operator for flow problem
-a_flow = eta * inner(nabla_grad(du1), nabla_grad(y1)) * dx +\
+a_flow = eta * inner(nabla_grad(du1), nabla_grad(y1)) * dx -\
     dot(nabla_grad(du2), y1) * dx +\
-    dot(div(du1), w1) * dx +\
+    dot(div(du1), w1) * dx -\
     gamma * dot(du1, y1) * dx
 zero = Expression(('0.0', '0.0', '0.0', '0.0'), degree=2)
 bcs_flow = DirichletBC(flowspace, zero, boundary)
