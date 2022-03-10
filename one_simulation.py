@@ -133,7 +133,8 @@ bcs_pol = DirichletBC(V, zero, boundary)
 #Define operator for stress
 a_str = (1 + eta / (E_bulk * dt)) * inner(uT, z) * dx
 # A_str = assemble(a_str)
-bcs_str = DirichletBC(TS, ZeroTensor(), boundary)
+zero = Expression(('0.0', '0.0', '0.0','0.0', '0.0', '0.0','0.0', '0.0', '0.0'), degree=2)
+bcs_str = DirichletBC(TS, zero, boundary)
 # bcs_str.apply(A_str)
 # solver_str = KrylovSolver("superlu_dist", "ilu")
 # solver_str.set_operator(A_str)
@@ -199,7 +200,7 @@ for i in tqdm(range(numSteps)):
     #     b_str = assemble(L_str)
     # else:
     #     b_str = assemble(L_str, tensor=b_str)
-    solve(a_str == L_str, str_new, bcs_str, solver_parameters=dict(linear_solver='gmres',
+    solve(a_str == L_str, str_new, bcs=bcs_str, solver_parameters=dict(linear_solver='gmres',
                                                                  preconditioner='ilu'))
     # solver_str.solve(str_new.vector(), b_str)
 
