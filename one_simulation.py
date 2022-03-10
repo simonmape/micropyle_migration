@@ -23,7 +23,7 @@ flowspace = FunctionSpace(mesh, flowspace_element)
 
 #Define simulation parameters
 eta = 5 / 3
-w_sa = 1
+w_sa = 10
 gamma = 1
 zeta = 1
 E_bulk = 1
