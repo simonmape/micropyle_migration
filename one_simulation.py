@@ -126,7 +126,7 @@ a_pol = (1. / dt) * dot(uV, y) * dx
 A_pol = assemble(a_pol)
 zero = Expression(('0.0', '0.0', '0.0'), degree=2)  # Expression(('0.0','0.0','0.0'), degree=2)
 bcs_pol = DirichletBC(V, zero, boundary)
-bcs_pol.apply(A_pol)
+# bcs_pol.apply(A_pol)
 solver_pol = KrylovSolver("superlu_dist", "ilu")
 solver_pol.set_operator(A_pol)
 
@@ -134,7 +134,7 @@ solver_pol.set_operator(A_pol)
 a_str = (1 + eta / (E_bulk * dt)) * inner(uT, z) * dx
 A_str = assemble(a_str)
 bcs_str = DirichletBC(TS, ZeroTensor(), boundary)
-bcs_str.apply(A_str)
+# bcs_str.apply(A_str)
 solver_str = KrylovSolver("superlu_dist", "ilu")
 solver_str.set_operator(A_str)
 
@@ -146,7 +146,7 @@ a_flow = eta * inner(nabla_grad(du1), nabla_grad(y1)) * dx +\
 A_flow = assemble(a_flow)
 zero = Expression(('0.0', '0.0', '0.0', '0.0'), degree=2)
 bcs_flow = DirichletBC(flowspace, zero, boundary)
-bcs_flow.apply(A_flow)
+# bcs_flow.apply(A_flow)
 solver_flow = KrylovSolver("superlu_dist", "ilu")
 solver_flow.set_operator(A_flow)
 
@@ -155,7 +155,7 @@ a_phi = (1. / dt) * uphi * w2 * dx
 A_phi = assemble(a_phi)
 zero = Expression(('0.0'), degree=2)
 bcs_phi = DirichletBC(W, zero, boundary)
-bcs_phi.apply(A_phi)
+# bcs_phi.apply(A_phi)
 solver_phi = KrylovSolver("superlu_dist", "ilu")
 solver_phi.set_operator(A_phi)
 
@@ -185,39 +185,43 @@ for i in tqdm(range(numSteps)):
 
     # POLARITY EVOLUTION #
     L_pol = (1. / dt) * dot(p_old, y) * dx - dot(nabla_grad(p_old) * (v_old + w_sa * p_old), y) * dx
-    if i==0:
-        b_pol = assemble(L_pol)
-    else:
-        b_pol = assemble(L_pol, tensor=b_pol)
-    # print('pol',abs(np.linalg.eig(A_pol.array())[0]).min())
-    solver_pol.solve(p_new.vector(), b_pol)
+    # if i==0:
+    #     b_pol = assemble(L_pol)
+    # else:
+    #     b_pol = assemble(L_pol, tensor=b_pol)
+    solve(a_pol == L_pol, p_new, bcs_pol, solver_parameters=dict(linear_solver='superlu_dist',
+                                                                 preconditioner='ilu'))
+    #solver_pol.solve(p_new.vector(), b_pol)
 
     # STRESS TENSOR
     L_str = eta * inner(E(v_old), z) * dx + (eta / E_bulk * dt) * inner(str_old, z) * dx
-    if i==0:
-        b_str = assemble(L_str)
-    else:
-        b_str = assemble(L_str, tensor=b_str)
-    # print('str', abs(np.linalg.eig(A_str.array())[0]).min())
-    solver_str.solve(str_new.vector(), b_str)
+    # if i==0:
+    #     b_str = assemble(L_str)
+    # else:
+    #     b_str = assemble(L_str, tensor=b_str)
+    solve(a_str == L_str, str_new, bcs_str, solver_parameters=dict(linear_solver='superlu_dist',
+                                                                 preconditioner='ilu'))
+    # solver_str.solve(str_new.vector(), b_str)
 
     # FLOW PROBLEM#
     L_flow = - zeta * dot(div(outer(p_new, p_new)), y1) * dx
-    if i==0:
-        b_flow = assemble(L_flow)
-    else:
-        b_flow = assemble(L_flow, tensor=b_flow)
+    # if i==0:
+    #     b_flow = assemble(L_flow)
+    # else:
+    #     b_flow = assemble(L_flow, tensor=b_flow)
     # print('flow', abs(np.linalg.eig(A_flow.array())[0]).min())
-    solver_flow.solve(vpr_new.vector(), b_flow)
-
+    # solver_flow.solve(vpr_new.vector(), b_flow)
+    solve(a_flow == L_flow, vpr_new, bcs_flow, solver_parameters=dict(linear_solver='superlu_dist',
+                                                                 preconditioner='ilu'))
     # PHASE FIELD PROBLEM#
     L_phi = (1. / dt) * phi_old * w2 * dx + dot(v_new, nabla_grad(phi_old)) * w2 * dx
-    if i==0:
-        b_phi = assemble(L_phi)
-    else:
-        b_phi = assemble(L_phi, tensor=b_phi)
-    # print('phi', abs(np.linalg.eig(A_phi.array())[0]).min())
-    solver_phi.solve(phi_new.vector(), b_phi)
+    # if i==0:
+    #     b_phi = assemble(L_phi)
+    # else:
+    #     b_phi = assemble(L_phi, tensor=b_phi)
+    solve(a_phi == L_phi, phi_new, bcs_phi, solver_parameters=dict(linear_solver='superlu_dist',
+                                                                      preconditioner='ilu'))
+    # solver_phi.solve(phi_new.vector(), b_phi)
 
     # ASSIGN ALL VARIABLES FOR NEW STEP
     str_old.assign(str_new)
