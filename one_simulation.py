@@ -133,7 +133,9 @@ bcs_pol = DirichletBC(V, zero, boundary)
 #Define operator for stress
 a_str = (1 + eta / (E_bulk * dt)) * inner(uT, z) * dx
 # A_str = assemble(a_str)
-zero = Expression(('0.0', '0.0', '0.0','0.0', '0.0', '0.0','0.0', '0.0', '0.0'), degree=2)
+zero = Expression((('0.0', '0.0', '0.0',)
+                   ('0.0', '0.0', '0.0',)
+                   ('0.0', '0.0', '0.0')), degree=2)
 bcs_str = DirichletBC(TS, zero, boundary)
 # bcs_str.apply(A_str)
 # solver_str = KrylovSolver("superlu_dist", "ilu")
