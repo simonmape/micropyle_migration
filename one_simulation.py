@@ -159,11 +159,11 @@ bcs_phi = DirichletBC(W, zero, boundary)
 # solver_phi = KrylovSolver("superlu_dist", "ilu")
 # solver_phi.set_operator(A_phi)
 
-def E(u):
-    return sym(nabla_grad(u))
-
-def W(u):
-    return skew(nabla_grad(u))
+# def E(u):
+#     return sym(nabla_grad(u))
+#
+# def W(u):
+#     return skew(nabla_grad(u))
 
 phi_file = File("results/phi.pvd")
 p_file = File("results/p.pvd")
@@ -194,7 +194,7 @@ for i in tqdm(range(numSteps)):
     #solver_pol.solve(p_new.vector(), b_pol)
 
     # STRESS TENSOR
-    L_str = eta * inner(E(v_old), z) * dx + (eta / E_bulk * dt) * inner(str_old, z) * dx
+    L_str = eta * inner(sym(nabla_grad(u)), z) * dx + (eta / E_bulk * dt) * inner(str_old, z) * dx
     # if i==0:
     #     b_str = assemble(L_str)
     # else:
